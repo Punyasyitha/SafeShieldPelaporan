@@ -8,7 +8,7 @@
         </p>
     </x-slot>
 
-    <div class=" px-4 sm:px-6 lg:px-8 bg-gray-100">
+    {{-- <div class=" px-4 sm:px-6 lg:px-8 bg-gray-100">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Kartu Statistik Pengaduan -->
             <div class="bg-white shadow rounded-xl p-6">
@@ -70,5 +70,5 @@
                 </table>
             </div>
         </div>
-    </div>
+    </div> --}}
 </x-app-layout>

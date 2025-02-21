@@ -16,41 +16,29 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="g-sidenav-show bg-gray-100 relative min-h-screen">
-    <!-- Latar belakang satu warna -->
-    <div class="absolute inset-0 z-0 bg-primary"></div>
-
+<body class="g-sidenav-show bg-gray-100 relative min-h-screen flex flex-col">
+    <!-- Ilustrasi di sisi atas -->
+    <div class="absolute w-full min-h-[300px] top-0"
+        style="background-image: url('{{ asset('assets/images/App_Two.jpg') }}'); background-size: contain; background-position: center; ">
+        <span class="absolute inset-0 bg-gradient-to-b from-primary/50 to-transparent"></span>
+    </div>
     <!-- Konten Utama -->
-    <div class="relative z-10 flex min-h-screen">
+    <div class="relative z-10 flex-1 flex min-h-screen">
         <!-- Sidebar -->
-            @include('layouts.navbars.sidebar')
+        @include('layouts.navbars.admin.sidebar')
 
         <!-- Bagian kanan untuk topbar dan konten -->
         <div class="flex-1 flex flex-col">
             <!-- Topbar sejajar dengan sidebar -->
-            <div class="w-full h-16 bg-gradient-to-r from-purple-100 to-purple-400 shadow z-10">
-                @include('layouts.navbars.topbar')
-            </div>
+            @include('layouts.navbars.admin.topbar')
 
             <!-- Konten halaman -->
-            <div class="flex-1 bg-transparent overflow-auto p-6 space-y-6"> <!-- Padding ditambahkan di sini -->
-                @isset($header)
-                    <header class="bg-yellow-200 shadow rounded-xl p-8"> <!-- Styling disesuaikan seperti gambar -->
-                        <div class="max-w-7xl mx-auto">
-                            {{ $header }}
-
-                            @isset($subheader)
-                                <div class="text-gray-700 text-base">
-                                    {{ $subheader }}
-                                </div>
-                            @endisset
-                        </div>
-                    </header>
-                @endisset
-
-                <main class="p-6 transition-all duration-300">
+            <div class="flex-1 bg-transparent overflow-auto p-6 space-y-6 flex flex-col">
+                <!-- Padding ditambahkan di sini -->
+                <main class="flex-1 p-6 transition-all duration-300">
                     {{ $slot }}
                 </main>
+                @include('layouts.footers.admin.footer') <!-- Footer ditambahkan di sini -->
             </div>
         </div>
     </div>
