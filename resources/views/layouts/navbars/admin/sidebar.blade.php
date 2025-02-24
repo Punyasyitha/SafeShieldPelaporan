@@ -1,5 +1,5 @@
 <nav x-data="{ sidebarOpen: false, masterOpen: false, transactionOpen: false }"
-    class="sidenav navbar navbar-vertical navbar-expand-xs border-0 rounded-2xl my-3 fixed-start ms-4 relative z-50">
+    class="sidenav navbar navbar-vertical navbar-expand-xs border-0 rounded-2xl my-5 fixed-start ms-5 relative z-50">
     <!-- Tombol untuk sidebar di mobile -->
     <div class="sm:hidden p-3 h-10 bg-pink-200 shadow z-10 rounded-2xl">
         <button @click="sidebarOpen = true" class="text-gray-500 hover:text-pink-100 focus:outline-none">
@@ -30,46 +30,41 @@
         </div>
 
         <ul class="space-y-2">
-            <li>
-                <a href="{{ route('admin.dashboard') }}" class="block p-2 rounded hover:bg-pink-200"
-                    :class="{ 'bg-pink-200': window.location.pathname === '/admin/dashboard' }">
-                    Dashboard
-                </a>
-            </li>
-            <li>
-                <a @click.prevent="masterOpen = !masterOpen" href="#"
-                    class="block p-2 rounded hover:bg-pink-200 flex justify-between items-center">
-                    Master
-                    <svg class="h-4 w-4 transform" :class="{ 'rotate-180': masterOpen }"
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </a>
-                <ul x-show="masterOpen" class="pl-4 space-y-2">
-                    <li><a href="#" class="block p-2 rounded hover:bg-pink-200">Status Pengaduan</a></li>
-                    <li><a href="#" class="block p-2 rounded hover:bg-pink-200">Penulis</a></li>
-                    <li><a href="#" class="block p-2 rounded hover:bg-pink-200">Modul</a></li>
-                    <li><a href="#" class="block p-2 rounded hover:bg-pink-200">Kategori</a></li>
-                </ul>
-            </li>
-            <li>
-                <a @click.prevent="transactionOpen = !transactionOpen" href="#"
-                    class="block p-2 rounded hover:bg-pink-200 flex justify-between items-center">
-                    Artikel
-                </a>
-            </li>
-            <li>
-                <a @click.prevent="transactionOpen = !transactionOpen" href="#"
-                    class="block p-2 rounded hover:bg-pink-200 flex justify-between items-center">
-                    Materi
-                </a>
-            </li>
-            <li>
-                <a @click.prevent="transactionOpen = !transactionOpen" href="#"
-                    class="block p-2 rounded hover:bg-pink-200 flex justify-between items-center">
-                    Pelaporan
-                </a>
-            </li>
+            @foreach ($menus as $menu)
+                @if (isset($menu['submenu']))
+                    <li x-data="{ open: false }">
+                        <a @click.prevent="open = !open" href="#"
+                            class="block p-2 rounded hover:bg-pink-200 flex justify-between items-center">
+                            <div>
+                                <i class="{{ $menu['icon'] }} mr-2"></i>{{ $menu['title'] }}
+                            </div>
+                            <svg class="h-4 w-4 transform" :class="{ 'rotate-180': open }"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </a>
+                        <ul x-show="open" class="pl-4 space-y-2">
+                            @foreach ($menu['submenu'] as $submenu)
+                                <li>
+                                    <a href="{{ route($submenu['route']) }}"
+                                        class="block p-2 rounded hover:bg-pink-200 {{ request()->routeIs($submenu['route']) ? 'bg-pink-200' : '' }}">
+                                        {{ $submenu['title'] }}
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    </li>
+                @else
+                    <li>
+                        <a href="{{ route($menu['route']) }}"
+                            class="block p-2 rounded hover:bg-pink-200 {{ request()->routeIs($menu['route']) ? 'bg-pink-200' : '' }}">
+                            <i class="{{ $menu['icon'] }} mr-2"></i>{{ $menu['title'] }}
+                        </a>
+                    </li>
+                @endif
+            @endforeach
         </ul>
     </div>
 
@@ -82,43 +77,56 @@
         </div>
         <ul class="space-y-2">
             <li>
-                <a href="{{ route('admin.dashboard') }}" class="block p-2 rounded hover:bg-pink-200"
-                    :class="{ 'bg-pink-200': window.location.pathname === '/admin/dashboard' }"><i
-                        class="fas fa-tachometer-alt"></i>
-                    Dashboard
+                <a href="{{ route('admin.dashboard') }}"
+                    class="block p-2 rounded hover:bg-pink-200 {{ request()->routeIs('admin.dashboard') ? 'bg-pink-200' : '' }}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
             </li>
-            <li>
-                <a @click.prevent="masterOpen = !masterOpen" href="#"
-                    class="block p-2 rounded hover:bg-pink-200 flex justify-between items-center">
+            <li x-data="{ open: {{ request()->routeIs('master.*') ? 'true' : 'false' }} }">
+                <a @click.prevent="open = !open"
+                    class="block p-2 rounded flex justify-between items-center hover:bg-pink-200
+                    {{ request()->routeIs('master.*') ? 'font-bold' : '' }}">
                     Master
-                    <svg class="h-4 w-4 transform" :class="{ 'rotate-180': masterOpen }"
-                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="h-4 w-4 transform" :class="{ 'rotate-180': open }" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </a>
-                <ul x-show="masterOpen" class="pl-4 space-y-2">
-                    <li><a href="#" class="block p-2 rounded hover:bg-pink-200">Status Pengaduan</a></li>
-                    <li><a href="#" class="block p-2 rounded hover:bg-pink-200">Penulis</a></li>
-                    <li><a href="#" class="block p-2 rounded hover:bg-pink-200">Modul</a></li>
-                    <li><a href="#" class="block p-2 rounded hover:bg-pink-200">Kategori</a></li>
+                <ul x-show="open" class="pl-4 space-y-2 mt-2">
+                    <li>
+                        <a href="{{ route('master.status.list') }}"
+                            class="block p-2 rounded hover:bg-pink-200
+                            {{ request()->routeIs('master.status.list') ? 'bg-pink-200' : '' }}">
+                            Status Pengaduan
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="block p-2 rounded hover:bg-pink-200">
+                            Penulis
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="block p-2 rounded hover:bg-pink-200">
+                            Modul
+                        </a>
+                    </li>
                 </ul>
             </li>
             <li>
-                <a @click.prevent="transactionOpen = !transactionOpen" href="#"
-                    class="block p-2 rounded hover:bg-pink-200 flex justify-between items-center">
+                <a
+                    class="block p-2 rounded hover:bg-pink-200 {{ request()->routeIs('artikel.*') ? 'bg-pink-200' : '' }}">
                     Artikel
                 </a>
             </li>
             <li>
-                <a @click.prevent="transactionOpen = !transactionOpen" href="#"
-                    class="block p-2 rounded hover:bg-pink-200 flex justify-between items-center">
+                <a
+                    class="block p-2 rounded hover:bg-pink-200 {{ request()->routeIs('materi.*') ? 'bg-pink-200' : '' }}">
                     Materi
                 </a>
             </li>
             <li>
-                <a @click.prevent="transactionOpen = !transactionOpen" href="#"
-                    class="block p-2 rounded hover:bg-pink-200 flex justify-between items-center">
+                <a
+                    class="block p-2 rounded hover:bg-pink-200 {{ request()->routeIs('pelaporan.*') ? 'bg-pink-200' : '' }}">
                     Pelaporan
                 </a>
             </li>

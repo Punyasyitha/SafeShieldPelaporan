@@ -12,8 +12,21 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
+    <!-- Font Awesome -->
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-yBFgZMR3+..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GtvLyykRPk7y9jHjSh7zS0skTOoaRfgbB2VaZCJoQ0FfDRFHRy6cNOXjmvH87pW3" crossorigin="anonymous">
+
+    <!-- Bootstrap JS (opsional jika pakai komponen JS Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-p3t6V1SM2ctEmqebdaFdJrZtHvtrcDKIK1eHIYjSU/EzJ0R6Rna7QfRQjv8e/epM" crossorigin="anonymous">
+    </script>
 </head>
 
 <body class="g-sidenav-show bg-gray-100 relative min-h-screen flex flex-col">

@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SatgasController;
+use App\Http\Controllers\StatusController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +26,14 @@ require __DIR__ . '/auth.php';
 
 Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [HomeController::class, 'index'])->name('admin.dashboard');
+
+    // Grup untuk semua Master
+    Route::prefix('master')->name('master.')->group(function () {
+        Route::get('/status', function () {
+            $data['url'] = 'master.status.list'; // Nama file view
+            return app(StatusController::class)->index($data);
+        })->name('status.list');
+    });
 });
 
 Route::middleware(['auth', 'satgasppks'])->group(function () {
