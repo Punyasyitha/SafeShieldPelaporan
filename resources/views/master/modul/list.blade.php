@@ -5,12 +5,12 @@
                 <h6 class="text-lg font-bold mb-2">LIST STATUS</h6>
                 <hr class="horizontal dark mt-1 mb-2">
                 <div class="flex justify-between items-center mt-5">
-                    @if ($authorize->add == '1')
+                    {{-- @if ($authorize->add == '1')
                         <button class="bg-pink-300 hover:bg-pink-400 text-white font-semibold py-2 px-4 rounded-lg"
                             onclick="window.location='{{ URL::to($url . '/add') }}'">
                             <i class="fas fa-plus"></i><span class="font-weight-bold ml-1">Tambah</span>
                         </button>
-                    @endif
+                    @endif --}}
                     <input type="text" id="searchInput" placeholder="Search..."
                         class="border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-pink-100">
                 </div>
@@ -46,38 +46,7 @@
                 </thead>
 
                 <tbody>
-                    @foreach ($list as $sts)
-                        <tr class="border-b border-gray-300 text-left">
-                            <td class="py-3 px-6">{{ $loop->iteration }}</td>
-                            <td class="py-3 px-6">{{ $sts->idstatus }}</td>
-                            <td class="py-3 px-6">{{ $sts->nama_status }}</td>
-                            <td class="py-3 px-6 text-left">
-                                {{-- Tombol Lihat --}}
-                                <button class="bg-blue-500 hover:bg-blue-600 text-white py-1 px-3 rounded mr-2"
-                                    onclick="window.location='{{ url($url . '/show/' . encrypt($sts->idstatus)) }}'">
-                                    <i class="fas fa-eye"></i> <span class="font-weight-bold">Lihat</span>
-                                </button>
 
-                                {{-- Tombol Edit --}}
-                                <button class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded mr-2"
-                                    onclick="window.location='{{ url($url . '/edit/' . encrypt($sts->idstatus)) }}'">
-                                    <i class="fas fa-edit"></i><span class="font-weight-bold"> Edit </span>
-                                </button>
-
-                                {{-- Tombol Hapus --}}
-                                <form action="{{ route('master.status.delete', encrypt($sts->idstatus)) }}"
-                                    method="POST" style="display: inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
-                                        onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                        <i class="fas fa-trash"></i> <span class="font-weight-bold">Hapus</span>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
                 </tbody>
 
             </table>

@@ -16,7 +16,5 @@ class MstStatus extends Model
 
     protected $fillable = [
         'nama_status',
-        'user_create',
-        'user_update',
     ];
 }

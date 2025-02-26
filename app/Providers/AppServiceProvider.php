@@ -22,14 +22,23 @@ class AppServiceProvider extends ServiceProvider
             $menus = [
                 [
                     'title' => 'Dashboard',
-                    'icon'  => 'fas fa-tachometer-alt',
+                    'icon'  => 'fas fa-laptop',
                     'route' => 'admin.dashboard',
                 ],
                 [
                     'title'   => 'Master',
-                    'icon'    => 'fas fa-database',
+                    'icon'    => 'fas fa-folder-open',
                     'submenu' => [
-                        ['title' => 'Status Pengaduan', 'route' => 'master.status.list'],
+                        [
+                            'title' => 'Status',
+                            'icon'  => 'fas fa-check-circle', // Ikon untuk submenu Status
+                            'route' => 'master.status.list'
+                        ],
+                        [
+                            'title' => 'Modul',
+                            'icon'  => 'fas fa-server', // Ikon untuk submenu Status
+                            'route' => 'master.modul.list'
+                        ],
                     ],
                 ],
             ];

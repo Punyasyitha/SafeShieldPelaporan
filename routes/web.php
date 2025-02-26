@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ModulController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SatgasController;
@@ -30,9 +31,20 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Grup untuk semua Master
     Route::prefix('master')->name('master.')->group(function () {
         Route::get('/status', function () {
-            $data['url'] = 'master.status.list'; // Nama file view
+            $data['url'] = url('master/status'); // ⬅️ Gunakan URL, bukan nama view
             return app(StatusController::class)->index($data);
         })->name('status.list');
+        Route::get('/status/add', [StatusController::class, 'add'])->name('status.add');
+        Route::post('/status/store', [StatusController::class, 'store'])->name('status.store');
+        Route::get('/status/show/{id}', [StatusController::class, 'show'])->name('status.show');
+        Route::get('/status/edit/{id}', [StatusController::class, 'edit'])->name('status.edit');
+        Route::put('/status/update/{id}', [StatusController::class, 'update'])->name('status.update');
+        Route::delete('/status/delete/{id}', [StatusController::class, 'delete'])->name('status.delete');
+
+        Route::get('/modul', function () {
+            $data['url'] = url('master/modul'); // ⬅️ Gunakan URL, bukan nama view
+            return app(ModulController::class)->index($data);
+        })->name('modul.list');
     });
 });
 
