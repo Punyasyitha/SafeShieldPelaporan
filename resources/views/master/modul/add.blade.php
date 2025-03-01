@@ -1,15 +1,15 @@
 <x-app-layout>
-    <form id="iniForm" action="{{ route('master.status.store') }}" method="POST" enctype="multipart/form-data">
+    <form id="iniForm" action="{{ route('master.modul.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="w-full bg-white shadow-lg rounded-lg p-6">
             <div class="overflow-x-auto">
                 <div class="flex flex-col mb-4">
-                    <h6 class="text-lg font-bold mb-2">LIST STATUS</h6>
+                    <h6 class="text-lg font-bold mb-2">INSERT MODUL</h6>
                     <hr class="horizontal dark mt-1 mb-2">
 
                     <!-- Tombol Kembali dan Simpan di kiri -->
                     <div class="flex justify-start items-center gap-2 mt-5">
-                        <button type="button" onclick="window.location='{{ route('master.status.list') }}'"
+                        <button type="button" onclick="window.location='{{ route('master.modul.list') }}'"
                             class="bg-gray-300 hover:bg-gray-400 text-black font-semibold py-2 px-4 rounded-lg">
                             <i class="fas fa-circle-left me-1"></i><span class="font-weight-bold ml-1">Kembali</span>
                         </button>
@@ -24,16 +24,28 @@
                     </div>
                 </div>
 
-                <!-- Form input ID Status (read-only) dan Nama Status -->
+                <!-- Form input ID Modul (read-only) dan Nama Modul -->
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">ID Status</label>
-                    <input type="text" name="idstatus" readonly
+                    <label class="block text-sm font-medium text-gray-700">ID Modul</label>
+                    <input type="text" name="idmodul" readonly
                         class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none">
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Nama Status</label>
-                    <input type="text" name="nama_status" required
+                    <label class="block text-sm font-medium text-gray-700">Nama Modul</label>
+                    <input type="text" name="nama_modul" required
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Deskripsi</label>
+                    <textarea name="deskripsi" required rows="4"
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200 resize-none"></textarea>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700">Tahun Terbit</label>
+                    <input type="date" name="tahun_terbit" required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
                 </div>
             </div>
@@ -69,23 +81,6 @@
                 // Log the required inputs to console for debugging
                 console.log($("input").prop('required', true));
 
-                $("input:not(#myVendor_filter input)").prop('required', true).each(function() {
-                    // Allow null or empty inputs to be valid
-                    if ($(this).val() !== null && $(this).val() !== '' && !$(this)[0]
-                        .checkValidity()) {
-                        // Log invalid input to console for debugging
-                        console.log('Invalid input:', $(this));
-                        console.log('Value:', $(this).val());
-                        console.log('Validation issue:', $(this)[0].validationMessage);
-
-                        isFormValid = false; // Set flag invalid form
-                        errorMessage +=
-                            '<br>Lengkapi semua kolom yang wajib diisi dengan nilai yang valid.';
-                        return false; // Exit the loop if any input is invalid
-                    }
-                });
-
-
                 // If the form is not valid, show the error message and stop the process
                 if (!isValid || !isFormValid) {
                     Swal.fire({
@@ -101,7 +96,7 @@
                 function submitForm() {
                     // Send form data with AJAX
                     $.ajax({
-                        url: "{{ URL::to($url_menu) }}", // Ensure the URL is correct
+                        url: "{{ URL::to($url) }}", // Ensure the URL is correct
                         type: "POST",
                         data: formData, // Form data to be sent
                         contentType: false, // Necessary for sending FormData
@@ -115,7 +110,7 @@
                                 showConfirmButton: true,
                             }).then((result) => {
                                 // Redirect after successful submission
-                                window.location.href = "{{ url($url_menu) }}";
+                                window.location.href = "{{ url($url) }}";
                             });
                         },
                         error: function(jqXHR, textStatus, errorThrown) {

@@ -10,11 +10,11 @@
     </div>
 
     <!-- Sidebar Mobile -->
-    <div x-show="sidebarOpen" @click.away="sidebarOpen = false" x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="-translate-x-full" x-transition:enter-end="translate-x-0"
-        x-transition:leave="transition ease-in duration-300" x-transition:leave-start="translate-x-0"
-        x-transition:leave-end="-translate-x-full"
-        class="fixed inset-y-3 left-4 w-60 bg-gray-100 text-gray-700 shadow-lg z-50 p-3 space-y-4 transform -translate-x-full sm:hidden rounded-2xl border-0"
+    <div x-show="sidebarOpen" x-cloak @click.away="sidebarOpen = false"
+        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="-translate-x-full"
+        x-transition:enter-end="translate-x-0" x-transition:leave="transition ease-in duration-300"
+        x-transition:leave-start="translate-x-0" x-transition:leave-end="-translate-x-full"
+        class="fixed inset-y-3 left-4 w-60 bg-gray-100 text-gray-700 shadow-lg z-50 p-3 space-y-4 sm:hidden rounded-2xl border-0"
         :class="{ 'translate-x-0': sidebarOpen }">
 
         <div class="flex justify-between items-center">

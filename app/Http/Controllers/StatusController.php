@@ -7,14 +7,13 @@ use Illuminate\Support\Facades\DB;
 
 class StatusController extends Controller
 {
-    public function index($data)
+    public function index()
     {
-        // ✅ Set hak akses untuk admin (misalnya, hanya admin yang bisa menambah)
-        $data['authorize'] = (object)['add' => '1'];
-
-        $data['list'] = DB::table('mst_sts_pengaduan')
-            ->orderBy('idstatus', 'asc') // Mengurutkan berdasarkan idstatus
-            ->get();
+        $data = [
+            'authorize' => (object)['add' => '1'],
+            'url' => url('master/status'),
+            'list' => DB::table('mst_sts_pengaduan')->orderBy('idstatus', 'asc')->paginate(10),
+        ];
 
         return view('master.status.list', $data);
     }

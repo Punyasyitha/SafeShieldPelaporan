@@ -1,8 +1,8 @@
 <x-app-layout>
-    <div class="w-full px-4 py-2">
-        <div class="bg-white shadow-lg rounded-lg p-4 overflow-x-auto">
+    <div class="w-full bg-white shadow-lg rounded-lg p-6">
+        <div class="overflow-x-auto">
             <div class="flex flex-col mb-4">
-                <h6 class="text-lg font-bold mb-2">DETAIL STATUS</h6>
+                <h6 class="text-lg font-bold mb-2">LIST STATUS</h6>
                 <hr class="horizontal dark mt-1 mb-2">
 
                 <!-- Tombol Kembali dan Edit -->
@@ -14,7 +14,7 @@
 
                     <button type="button"
                         onclick="window.location='{{ url($url . '/edit/' . encrypt($status->idstatus)) }}'"
-                        class="bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded mr-2">
+                        class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg">
                         <i class="fas fa-pen-to-square me-1"></i><span class="font-weight-bold">Edit</span>
                     </button>
                 </div>
