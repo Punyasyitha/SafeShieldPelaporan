@@ -19,4 +19,9 @@ class MstModul extends Model
         'deskripsi',
         'tahun_terbit',
     ];
+
+    public function materis()
+    {
+        return $this->hasMany(Materi::class, 'modulid', 'idmodul');
+    }
 }

@@ -11,25 +11,24 @@ class StatusController extends Controller
     {
         $data = [
             'authorize' => (object)['add' => '1'],
-            'url' => url('master/status'),
+            'url' => url('admin/master/status'),
             'list' => DB::table('mst_sts_pengaduan')->orderBy('idstatus', 'asc')->paginate(10),
         ];
 
-        return view('master.status.list', $data);
+        return view('admin.master.status.list', $data);
     }
 
     public function add()
     {
         $authorize = (object)['add' => '1'];
-        return view('master.status.add', [
+        return view('admin.master.status.add', [
             'authorize' => $authorize,
-            'url' => 'master/status'
+            'url' => 'admin/master/status'
         ]);
     }
 
     public function store(Request $request)
     {
-        // Validasi input
         $request->validate([
             'idstatus' => 'nullable',
             'nama_status' => 'required|string|max:255',
@@ -37,10 +36,8 @@ class StatusController extends Controller
 
         DB::beginTransaction();
         try {
-            // Generate ID baru
             $newId = DB::table('mst_sts_pengaduan')->max('idstatus') + 1;
 
-            // Simpan data ke database
             DB::table('mst_sts_pengaduan')->insert([
                 'idstatus'    => $newId,
                 'nama_status' => $request->nama_status,
@@ -48,14 +45,11 @@ class StatusController extends Controller
 
             DB::commit();
 
-            // ✅ Redirect ke list dengan alert sukses
-            return redirect()->route('master.status.list')
+            return redirect()->route('admin.master.status.list')
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
             DB::rollBack();
-
-            // ❌ Redirect dengan alert error
-            return redirect()->route('master.status.list')
+            return redirect()->route('admin.master.status.list')
                 ->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
     }
@@ -63,28 +57,20 @@ class StatusController extends Controller
     public function show($id)
     {
         try {
-            // 🔓 Dekripsi ID
             $idstatus = decrypt($id);
+            $status = DB::table('mst_sts_pengaduan')->where('idstatus', $idstatus)->first();
 
-            // 🔎 Ambil data berdasarkan idstatus
-            $status = DB::table('mst_sts_pengaduan')
-                ->where('idstatus', $idstatus)
-                ->first();
-
-            // ❌ Jika data tidak ditemukan
             if (!$status) {
-                return redirect()->route('master.status.list')
+                return redirect()->route('admin.master.status.list')
                     ->with('error', 'Data tidak ditemukan.');
             }
 
-            // ✅ Tampilkan halaman detail
-            return view('master.status.show', [
+            return view('admin.master.status.show', [
                 'status' => $status,
-                'url' => 'master/status'
+                'url' => 'admin/master/status'
             ]);
         } catch (\Exception $e) {
-            // ❌ Jika terjadi kesalahan saat dekripsi atau pengambilan data
-            return redirect()->route('master.status.list')
+            return redirect()->route('admin.master.status.list')
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
@@ -96,19 +82,18 @@ class StatusController extends Controller
             $status = DB::table('mst_sts_pengaduan')->where('idstatus', $idstatus)->first();
 
             if (!$status) {
-                return redirect()->route('master.status.list')->with('error', 'Data tidak ditemukan.');
+                return redirect()->route('admin.master.status.list')->with('error', 'Data tidak ditemukan.');
             }
 
-            return view('master.status.edit', compact('status'));
+            return view('admin.master.status.edit', compact('status'));
         } catch (\Exception $e) {
-            return redirect()->route('master.status.list')
+            return redirect()->route('admin.master.status.list')
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
     public function update(Request $request, $id)
     {
-        //dd($request->all());
         try {
             $request->validate([
                 'nama_status' => 'required|string|max:255',
@@ -123,14 +108,14 @@ class StatusController extends Controller
                 ]);
 
             if ($updated) {
-                return redirect()->route('master.status.list')
+                return redirect()->route('admin.master.status.list')
                     ->with('success', 'Status berhasil diperbarui.');
             } else {
-                return redirect()->route('master.status.list')
+                return redirect()->route('admin.master.status.list')
                     ->with('error', 'Data tidak berubah.');
             }
         } catch (\Exception $e) {
-            return redirect()->route('master.status.list')
+            return redirect()->route('admin.master.status.list')
                 ->with('error', 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage());
         }
     }
@@ -138,21 +123,22 @@ class StatusController extends Controller
     public function delete($id)
     {
         try {
-            $idstatus = decrypt($id); // 🔓 Dekripsi ID
-
-            $status = DB::table('mst_sts_pengaduan')->where('idstatus', $idstatus)->first();
-            if (!$status) {
-                return redirect()->route('master.status.list')
-                    ->with('error', 'Data tidak ditemukan.');
-            }
-
-            // 🚀 Hapus data
-            DB::table('mst_sts_pengaduan')->where('idstatus', $idstatus)->delete();
-
-            return redirect()->route('master.status.list')
-                ->with('success', 'Status berhasil dihapus.');
+            $idstatus = decrypt($id);
         } catch (\Exception $e) {
-            return redirect()->route('master.status.list')
+            abort(404, 'Data tidak ditemukan');
+        }
+        $status = DB::table('mst_sts_pengaduan')->where('idstatus', $idstatus)->first();
+        if (!$status) {
+            return redirect()->route('admin.master.status.list')
+                ->with('error', 'Data tidak ditemukan.');
+        }
+
+        try {
+            DB::table('mst_sts_pengaduan')->where('idstatus', $idstatus)->delete();
+            return redirect()->route('admin.master.status.list')
+                ->with('success', 'Data berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.master.status.list')
                 ->with('error', 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage());
         }
     }

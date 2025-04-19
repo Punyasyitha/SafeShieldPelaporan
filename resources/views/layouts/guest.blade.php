@@ -1,35 +1,5 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-
-        <title>{{ config('app.name', 'Laravel') }}</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
-
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                {{ $slot }}
-            </div>
-        </div>
-    </body>
-</html>
-{{-- <!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="utf-8">
@@ -38,32 +8,74 @@
 
     <title>{{ config('app.name', 'Laravel') }}</title>
 
-    <!-- Bootstrap 5.3 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    <!-- Google Fonts: Playfair Display -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
-        rel="stylesheet">
+    <!-- Font Awesome -->
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-yBFgZMR3+..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <!-- Laravel Vite -->
+    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GtvLyykRPk7y9jHjSh7zS0skTOoaRfgbB2VaZCJoQ0FfDRFHRy6cNOXjmvH87pW3" crossorigin="anonymous">
+
+    <!-- Bootstrap JS (opsional jika pakai komponen JS Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-p3t6V1SM2ctEmqebdaFdJrZtHvtrcDKIK1eHIYjSU/EzJ0R6Rna7QfRQjv8e/epM" crossorigin="anonymous">
+    </script>
 </head>
 
-<body class="g-sidenav-show" style="background-color: #FFF;">
-    <main class="main-content mt-0 ps">
-        <section>
-            <div class="page-header min-vh-100">
-                <div class="container-fluid vh-100">
-                    <div class="row h-100 d-flex align-items-center justify-content-center">
-                        {{ $slot }}
-                    </div>
-                </div>
+<body class="g-sidenav-show bg-gray-100 relative min-h-screen flex flex-col">
+    <!-- Ilustrasi di sisi atas -->
+    <div class="absolute w-full min-h-[300px] top-0"
+        style="background-image: url('{{ asset('assets/images/App_Two.jpg') }}'); background-size: contain; background-position: center; ">
+        <span class="absolute inset-0 bg-gradient-to-b from-primary/50 to-transparent"></span>
+    </div>
+    <!-- Konten Utama -->
+    <div class="relative z-10 flex min-h-screen">
+        <!-- Sidebar -->
+        @include('layouts.navbars.user.sidebar')
+
+        <!-- Bagian kanan untuk topbar dan konten -->
+        <div class="flex-1 flex flex-col">
+            <!-- Topbar sejajar dengan sidebar -->
+            <div class="lg:pl-[250px] transition-all duration-300">
+                @include('layouts.navbars.user.topbar')
             </div>
-        </section>
-    </main>
+            <!-- Konten halaman -->
+            <div
+                class="bg-transparent overflow-auto space-y-6 min-h-screen pr-6 flex flex-col
+                transition-all duration-300 pl-4 lg:pl-[280px]">
+                <!-- Ubah pl-10 menjadi pl-4 untuk mobile, lg:pl-250px untuk desktop -->
+                <main class="transition-all duration-300 flex-grow">
+                    {{ $slot }}
+                </main>
+                @include('layouts.footers.user.footer') <!-- Footer -->
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Toggle Sidebar
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+
+            sidebar.classList.toggle('-translate-x-full'); // Toggle sidebar
+            content.classList.toggle('lg:pl-[280px]'); // Toggle jarak konten
+            content.classList.toggle('lg:pl-4'); // Agar kembali tanpa jarak saat sidebar tertutup
+        });
+
+        // Toggle Dropdown User
+        document.querySelector('[id^=userDropdown]').previousElementSibling.addEventListener('click', function() {
+            document.getElementById('userDropdown').classList.toggle('hidden');
+        });
+    </script>
 </body>
 
-</html> --}}
+</html>

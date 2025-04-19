@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('idartikel', 10);
             $table->string('penulisid', 10);
             $table->foreign('penulisid')->references('idpenulis')->on('mst_penulis');
-            $table->char('judul_artikel', 255);
+            $table->string('judul_artikel', 255);
             $table->text('isi_artikel'); // Menambahkan kolom isi_artikel
             $table->date('tanggal_rilis'); // Menambahkan kolom tanggal_rilis
             $table->primary('idartikel');

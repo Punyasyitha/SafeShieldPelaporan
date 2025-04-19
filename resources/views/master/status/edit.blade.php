@@ -3,7 +3,7 @@
     <div class="w-full bg-white shadow-lg rounded-lg p-6">
         <div class="overflow-x-auto">
             <div class="flex flex-col mb-4">
-                <h6 class="text-lg font-bold mb-2">LIST STATUS</h6>
+                <h6 class="text-lg font-bold mb-2">EDIT STATUS</h6>
                 <hr class="horizontal dark mt-1 mb-2">
 
                 <!-- Tombol Kembali dan Simpan -->
@@ -35,7 +35,7 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Nama Status</label>
                     <input type="text" name="nama_status" value="{{ $status->nama_status }}"
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-pink-200"
                         required>
                 </div>
             </form>

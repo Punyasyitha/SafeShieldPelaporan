@@ -4,6 +4,21 @@
             <div class="flex flex-col mb-4">
                 <h6 class="text-lg font-bold mb-2">LIST MODUL</h6>
                 <hr class="horizontal dark mt-1 mb-2">
+                @if (session('success'))
+                    <div class="alert bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
+                        role="alert">
+                        <strong class="font-bold">Sukses! </strong>
+                        <span class="block sm:inline">{{ session('success') }}</span>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+                        role="alert">
+                        <strong class="font-bold">Gagal! </strong>
+                        <span class="block sm:inline">{{ session('error') }}</span>
+                    </div>
+                @endif
 
                 <!-- Tombol & Search Input (Responsif) -->
                 <div class="flex flex-wrap justify-between items-center gap-2 mt-5">
@@ -22,7 +37,7 @@
 
             <!-- Wrapper untuk Responsivitas -->
             <div class="overflow-x-auto">
-                <table id="statusTable" class="min-w-full border-gray-300 text-sm w-full">
+                <table id="modulTable" class="min-w-full border-gray-300 text-sm w-full">
                     <thead>
                         <tr class="bg-gray-100 text-sm leading-normal">
                             <th class="py-3 px-6 text-left">
@@ -82,13 +97,13 @@
                                         <i class="fas fa-edit"></i> Edit
                                     </button>
 
-                                    <form action="{{ route('master.status.delete', encrypt($mod->idmodul)) }}"
-                                        method="POST">
+                                    <form action="{{ route('master.modul.delete', encrypt($mod->idmodul)) }}"
+                                        method="POST" class="delete-form">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit"
-                                            class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded"
-                                            onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
+                                        <button type="button"
+                                            class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded delete-btn"
+                                            data-id="{{ encrypt($mod->idmodul) }}">
                                             <i class="fas fa-trash"></i> Hapus
                                         </button>
                                     </form>
@@ -109,16 +124,47 @@
         // Fungsi untuk search
         document.getElementById('searchInput').addEventListener('keyup', function() {
             let searchValue = this.value.toLowerCase();
-            let rows = document.querySelectorAll('#statusTable tbody tr');
+            let rows = document.querySelectorAll('#modulTable tbody tr');
             rows.forEach(row => {
                 let text = row.innerText.toLowerCase();
                 row.style.display = text.includes(searchValue) ? '' : 'none';
             });
         });
 
+        // Konfirmasi hapus
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                let id = this.getAttribute('data-id');
+                Swal.fire({
+                    title: "Apakah Anda yakin?",
+                    text: "Data yang dihapus tidak dapat dikembalikan!",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor: "#3085d6",
+                    confirmButtonText: "Ya, hapus!",
+                    cancelButtonText: "Batal",
+                    scrollbarPadding: false // Mencegah perubahan margin akibat scrollbar
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.closest('form').submit();
+                    }
+                });
+            });
+        });
+
+        // Auto-hide alert setelah 3 detik
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                alert.style.transition = "opacity 0.5s ease-out";
+                alert.style.opacity = "0";
+                setTimeout(() => alert.remove(), 500); // Hapus elemen setelah efek fade-out selesai
+            });
+        }, 3000);
+
         // Fungsi untuk sort
         function sortTable(columnIndex) {
-            const table = document.getElementById('statusTable');
+            const table = document.getElementById('modulTable');
             const rows = Array.from(table.rows).slice(1);
             let isAsc = table.getAttribute('data-sort-asc') === 'true';
             rows.sort((a, b) => {

@@ -22,17 +22,35 @@ class ViewServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('*', function ($view) {
-            // Ambil title_group dan title_menu
-            $title_group = ucfirst(Request::segment(2) ?? 'Dashboard'); // Master
-            $title_menu = ucfirst(str_replace('-', ' ', Request::segment(3) ?? '')); // Status Pengaduan
+            $role = Request::segment(1); // Cek apakah "admin" atau "user"
 
-            // ✅ Format $title: "Master / Status"
-            $title = $title_group . ($title_menu ? ' / ' . $title_menu : '');
+            if ($role === 'admin') {
+                // Logika untuk admin
+                $group = ucfirst(Request::segment(2) ?? 'Dashboard');
+                $menu = ucfirst(Request::segment(3) ?? '');
+                $action = strtolower(Request::segment(4) ?? '/');
 
-            // Kirim variabel ke view
-            $view->with('title_group', $title_group);
-            $view->with('title_menu', $title_menu);
-            $view->with('title', $title);
+                $combined = $menu ? $group . ' / ' . $menu : $group;
+
+                if (in_array($action, ['add', 'edit', 'show'])) {
+                    $combined .= ' / ' . ucfirst($action);
+                }
+
+                $view->with('title', $combined);
+            } elseif ($role === 'user') {
+                // Logika untuk user
+                $group = ucfirst(Request::segment(2) ?? 'Dashboard');
+                $menu = ucfirst(Request::segment(3) ?? '');
+                $action = strtolower(Request::segment(4) ?? '/');
+
+                $combined = $menu ? $group . ' / ' . $menu : $group;
+
+                if (in_array($action, ['add', 'edit', 'show'])) {
+                    $combined .= ' / ' . ucfirst($action);
+                }
+
+                $view->with('title', $combined);
+            }
         });
     }
 }
