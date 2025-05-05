@@ -19,7 +19,7 @@
         <x-dropdown align="right" width="48">
             <x-slot name="trigger">
                 <button
-                    class="flex items-center bg-pink-200 text-black font-semibold py-2 px-4 rounded-lg shadow hover:shadow-lg transition-all duration-200 space-x-2">
+                    class="flex items-center bg-purple-200 text-black font-semibold py-2 px-4 rounded-lg shadow hover:shadow-lg transition-all duration-200 space-x-2">
                     <i class="fa-solid fa-user text-lg"></i>
                     <span class="truncate max-w-[100px]">
                         {{ Auth::user()->name }}

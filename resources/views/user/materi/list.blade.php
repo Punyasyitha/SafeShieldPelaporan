@@ -1,21 +1,21 @@
 <x-app-layout>
-    <div class="w-full bg-white shadow-lg rounded-lg p-6">
+    <div class="w-full bg-white shadow-lg rounded-lg mt-6 p-6">
         <div class="flex flex-col mb-4">
-            <h6 class="text-lg font-bold mb-2">LIST MATERI</h6>
+            <h6 class="text-lg font-bold mb-2 text-purple-600">MATERI</h6>
             <hr class="horizontal dark mt-1 mb-2">
 
             <div class="flex flex-wrap justify-between items-center gap-2 mt-5">
                 <input type="text" id="searchInput" placeholder="Search..."
-                    class="border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-pink-100 w-full md:w-auto">
+                    class="border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-100 w-full md:w-auto">
             </div>
         </div>
 
-        <div class="grid grid-cols-1  gap-6 mt-4" id="materiCardList">
+        <div class="grid grid-cols-1 gap-6 mt-4" id="materiCardList">
             @foreach ($grouped as $modulid => $materis)
                 @php
                     $modul = $materis->first();
                 @endphp
-                <div class="bg-gray-50 border border-gray-200 rounded-lg shadow-md p-4 hover:shadow-lg transition">
+                <div class="bg-gray-100 border border-gray-200 rounded-lg shadow-md p-4 hover:shadow-lg transition">
                     <div class="mb-3">
                         <h5 class="text-md font-bold text-gray-800">{{ $modul->nama_modul }}</h5>
                         <p class="text-sm text-gray-600 mt-1">{{ $modul->deskripsi ?? '-' }}</p>
@@ -23,8 +23,9 @@
                             <ul class="text-sm text-gray-900 space-y-1">
                                 @foreach ($materis as $mtr)
                                     <li>
-                                        <a class="flex items-center text-blue-600 hover:underline cursor-pointer">
-                                            <i class="fas fa-file-alt mr-2"></i>
+                                        <a onclick="window.location='{{ route('user.materi.show', encrypt($mtr->idmateri)) }}'"
+                                            class="flex items-center text-blue-600 hover:underline cursor-pointer">
+                                            <i class="fas fa-file mr-2"></i>
                                             {{ $mtr->judul_materi }}
                                         </a>
                                     </li>

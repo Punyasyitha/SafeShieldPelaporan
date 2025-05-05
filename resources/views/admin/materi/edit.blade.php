@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="w-full bg-white shadow-lg rounded-lg p-6">
+    <div class="w-full bg-white shadow-lg rounded-lg mt-6 p-6">
         <div class="overflow-x-auto">
             <div class="flex flex-col mb-4">
                 <h6 class="text-lg font-bold mb-2">EDIT MATERI</h6>
@@ -13,7 +13,7 @@
                     </button>
 
                     <button type="submit" form="editMateriform"
-                        class="bg-pink-300 hover:bg-pink-400 text-white font-semibold py-2 px-4 rounded-lg">
+                        class="bg-purple-300 hover:bg-purple-400 text-white font-semibold py-2 px-4 rounded-lg">
                         <i class="fas fa-save me-1"></i><span class="font-weight-bold">Simpan</span>
                     </button>
                 </div>
@@ -34,7 +34,7 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Nama Modul</label>
                     <select name="modulid" id="modulSelect" required
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                         <option value="">-- Pilih Modul --</option>
                         @foreach ($modul as $mdl)
                             <option value="{{ $mdl->idmodul }}" data-deskripsi="{{ $mdl->deskripsi }}"
@@ -55,7 +55,7 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Nama Kategori</label>
                     <select name="kategoriid" required
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                         @foreach ($kategori as $ktg)
                             <option value="{{ $ktg->idkategori }}"
                                 {{ $ktg->idkategori == $materi->kategoriid ? 'selected' : '' }}>
@@ -69,7 +69,7 @@
                     <label class="block text-sm font-medium text-gray-700">Judul Materi</label>
                     <input type="text" name="judul_materi" value="{{ old('judul_materi', $materi->judul_materi) }}"
                         required
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                 </div>
 
                 <div class="mb-4">

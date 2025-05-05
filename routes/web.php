@@ -121,7 +121,9 @@ Route::middleware(['auth', 'satgasppks'])->group(function () {
 
 Route::middleware(['auth', 'user'])->prefix('user')->group(function () {
     Route::get('/dashboard', [UserController::class, 'index'])->name('user.dashboard');
+    Route::get('/artikel/show/{id}', [UserController::class, 'show'])->name('user.artikel.show');
     Route::get('/materi', [TerimaMateriController::class, 'index'])->name('user.materi.list');
+    Route::get('/materi/show/{id}', [TerimaMateriController::class, 'show'])->name('user.materi.show');
     Route::get('/pengaduan', [FormPengaduanController::class, 'pengaduan'])->name('user.pengaduan');
     Route::post('/pengaduan/store', [FormPengaduanController::class, 'store'])->name('user.pengaduan.store');
     Route::get('/progress', [ProgressController::class, 'index'])->name('user.progress.list');

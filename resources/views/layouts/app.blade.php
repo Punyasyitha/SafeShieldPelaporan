@@ -42,7 +42,7 @@
 
     <!-- Background header -->
     <div class="absolute w-full min-h-[300px] top-0 z-0"
-        style="background-image: url('{{ asset('assets/images/App_Two.jpg') }}'); background-size: contain; background-position: center;">
+        style="background-image: url('{{ asset('assets/images/gradien-wall.png') }}'); background-size: cover; background-position: center;">
         <span class="absolute inset-0 bg-gradient-to-b from-primary/50 to-transparent"></span>
     </div>
 
@@ -96,8 +96,6 @@
     @endpush
 
     @stack('scripts')
-</body>
-
 </body>
 
 </html>

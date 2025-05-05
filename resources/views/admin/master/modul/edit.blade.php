@@ -1,6 +1,6 @@
 <x-app-layout>
 
-    <div class="w-full bg-white shadow-lg rounded-lg p-6">
+    <div class="w-full bg-white shadow-lg rounded-lg mt-6 p-6">
         <div class="overflow-x-auto">
             <div class="flex flex-col mb-4">
                 <h6 class="text-lg font-bold mb-2">EDIT MODUL</h6>
@@ -14,7 +14,7 @@
                     </button>
 
                     <button type="submit" form="editModulForm"
-                        class="bg-pink-300 hover:bg-pink-400 text-white font-semibold py-2 px-4 rounded-lg">
+                        class="bg-purple-300 hover:bg-purple-400 text-white font-semibold py-2 px-4 rounded-lg">
                         <i class="fas fa-save me-1"></i><span class="font-weight-bold">Simpan</span>
                     </button>
                 </div>
@@ -35,19 +35,19 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Nama Modul</label>
                     <input type="text" name="nama_modul" value="{{ $modul->nama_modul }}" required
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Deskripsi</label>
                     <textarea name="deskripsi" rows="4" required
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200 resize-none">{{ $modul->deskripsi }}</textarea>
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 resize-none">{{ $modul->deskripsi }}</textarea>
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Tahun Terbit</label>
                     <input type="date" name="tahun_terbit" value="{{ $modul->tahun_terbit }}" required
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                 </div>
             </form>
         </div>

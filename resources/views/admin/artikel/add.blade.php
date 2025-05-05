@@ -1,7 +1,7 @@
 <x-app-layout>
     <form id="iniForm" action="{{ route('admin.artikel.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <div class="w-full bg-white shadow-lg rounded-lg p-6">
+        <div class="w-full bg-white shadow-lg rounded-lg mt-6 p-6">
             <div class="overflow-x-auto">
                 <div class="flex flex-col mb-4">
                     <h6 class="text-lg font-bold mb-2">INSERT ARTIKEL</h6>
@@ -15,7 +15,7 @@
 
                         @if ($authorize->add == '1')
                             <button id="submitForm"
-                                class="bg-pink-300 hover:bg-pink-400 text-white font-semibold py-2 px-4 rounded-lg">
+                                class="bg-purple-300 hover:bg-purple-400 text-white font-semibold py-2 px-4 rounded-lg">
                                 <i class="fas fa-floppy-disk me-1"></i>
                                 <span class="font-weight-bold">Simpan</span>
                             </button>
@@ -32,7 +32,7 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Nama Penulis</label>
                     <select name="penulisid" required
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                         @foreach ($penulis as $pns)
                             <option value="{{ $pns->idpenulis }}">{{ $pns->nama_penulis }}</option>
                         @endforeach
@@ -42,25 +42,25 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Judul Artikel</label>
                     <input type="text" name="judul_artikel" required
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Isi Artikel</label>
                     <textarea name="isi_artikel" required rows="4"
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200 resize-none"></textarea>
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 resize-none"></textarea>
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Tanggal Rilis</label>
                     <input type="date" name="tanggal_rilis" required
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Gambar Artikel</label>
                     <input type="file" name="gambar" accept="image/*" required
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                     <small class="text-gray-500">Format yang diperbolehkan: JPG, JPEG, PNG. Maksimal ukuran: 100MB</small>
                 </div>
 

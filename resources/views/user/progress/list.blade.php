@@ -1,49 +1,48 @@
 <x-app-layout>
-    <div class="w-full bg-white shadow rounded-lg p-6">
+    <div class="w-full bg-white shadow rounded-lg p-6 mt-6">
         <div class="mb-4">
-            <h2 class="text-xl font-bold text-pink-600 mb-2">Daftar Pengaduan Saya</h2>
+            <h2 class="text-xl font-bold mb-2">Daftar Pengaduan Saya</h2>
             <p class="text-sm text-gray-500">Berikut adalah pengaduan yang telah Anda ajukan. Anda dapat melihat detail
                 atau status dari setiap laporan.</p>
         </div>
 
         @if (session('success'))
-            <div class="alert bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4" role="alert">
+            <div class="alert bg-green-100 border border-green-400 text-green-700 px-2 py-3 rounded mb-4" role="alert">
                 <strong>Sukses! </strong>{{ session('success') }}
             </div>
         @endif
 
         @if (session('error'))
-            <div class="alert bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+            <div class="alert bg-red-100 border border-red-400 text-red-700 px-2 py-3 rounded mb-4" role="alert">
                 <strong>Gagal! </strong>{{ session('error') }}
             </div>
         @endif
 
         {{-- Tombol Tambah & Pencarian --}}
         <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-2">
-
             <input type="text" id="searchInput" placeholder="Cari pengaduan..."
-                class="border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-pink-200 w-full md:w-1/3">
+                class="border border-gray-300 rounded-lg py-2 px-2 focus:outline-none focus:ring-2 focus:ring-purple-200 w-full md:w-1/3">
         </div>
 
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm text-left border-gray-200" id="pengaduanUserTable">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="py-3 px-4">No</th>
-                        <th class="py-3 px-4">Status</th>
-                        <th class="py-3 px-4">Tanggal Kejadian</th>
-                        <th class="py-3 px-4">Nama Terlapor</th>
-                        <th class="py-3 px-4">Tempat Kejadian</th>
-                        <th class="py-3 px-4">Detail</th>
-                        <th class="py-3 px-4">Keterangan</th>
-                        <th class="py-3 px-4">Aksi</th>
+                        <th class="py-3 px-2 min-w-[50px] ">No</th>
+                        <th class="py-3 px-2 min-w-[100px] ">Status</th>
+                        <th class="py-3 px-2 min-w-[100px] ">Tanggal Kejadian</th>
+                        <th class="py-3 px-2 min-w-[120px] ">Nama Terlapor</th>
+                        <th class="py-3 px-2 min-w-[120px] ">Tempat Kejadian</th>
+                        <th class="py-3 px-2 min-w-[120px] ">Detail</th>
+                        <th class="py-3 px-2 min-w-[150px] ">Keterangan</th>
+                        <th class="py-3 px-2 min-w-[100px] ">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($list as $index => $item)
                         <tr class="border-t border-gray-200">
-                            <td class="py-3 px-4">{{ $loop->iteration }}</td>
-                            <td class="py-3 px-4">
+                            <td class="py-3 px-2 ">{{ $loop->iteration }}</td>
+                            <td class="py-3 px-2 ">
                                 @php
                                     $status = $item->nama_status ?? '-';
                                     $class = $warnaStatus[$status] ?? 'bg-gray-200 text-gray-800';
@@ -52,14 +51,14 @@
                                     {{ $status }}
                                 </span>
                             </td>
-                            <td class="py-3 px-4">
+                            <td class="py-3 px-2 ">
                                 {{ \Carbon\Carbon::parse($item->tanggal_kejadian)->translatedFormat('d F Y') }}
                             </td>
-                            <td class="py-3 px-4">{{ $item->nama_terlapor }}</td>
-                            <td class="py-3 px-4">{{ $item->tmp_kejadian }}</td>
-                            <td class="py-3 px-4">{{ Str::limit(strip_tags($item->detail), 60) }}</td>
-                            <td class="py-3 px-4">{{ Str::limit(strip_tags($item->keterangan), 60) }}</td>
-                            <td class="py-3 px-4">
+                            <td class="py-3 px-2 ">{{ $item->nama_terlapor }}</td>
+                            <td class="py-3 px-2 ">{{ $item->tmp_kejadian }}</td>
+                            <td class="py-3 px-2 ">{{ Str::limit(strip_tags($item->detail), 60) }}</td>
+                            <td class="py-3 px-2 ">{{ Str::limit(strip_tags($item->keterangan), 60) }}</td>
+                            <td class="py-3 px-2 ">
                                 <div x-data="{ open: false }">
                                     <button @click="open = true"
                                         class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-3 rounded items-center gap-2">
@@ -71,7 +70,7 @@
                                         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
                                         <div @click.away="open = false"
                                             class="bg-white rounded-lg p-6 w-[90%] max-w-xl overflow-y-auto max-h-[90vh]">
-                                            <h2 class="text-xl font-bold mb-4 text-pink-600">Detail Pengaduan</h2>
+                                            <h2 class="text-xl font-bold mb-4 text-purple-600">Detail Pengaduan</h2>
                                             <div class="space-y-3 text-sm text-gray-700">
                                                 <div>
                                                     <span class="font-semibold">Status:</span>
@@ -100,13 +99,12 @@
                                             </div>
                                             <div class="mt-6 text-right">
                                                 <button @click="open = false"
-                                                    class="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded">
+                                                    class="px-2 py-2 bg-gray-300 hover:bg-gray-400 rounded">
                                                     Tutup
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </td>
                         </tr>
@@ -115,8 +113,6 @@
                             <td colspan="8" class="text-center text-gray-500 py-4">Belum ada pengaduan.</td>
                         </tr>
                     @endforelse
-
-
                 </tbody>
             </table>
         </div>
@@ -138,6 +134,7 @@
             $(document).ready(function() {
                 $('#pengaduanUserTable').DataTable({
                     searching: false, // matikan fitur pencarian
+                    responsive: true,
                     language: {
                         lengthMenu: "Tampilkan _MENU_ data",
                         info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",

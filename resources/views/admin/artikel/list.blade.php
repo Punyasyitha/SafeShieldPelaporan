@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="w-full bg-white shadow-lg rounded-lg p-6">
+    <div class="w-full bg-white shadow-lg rounded-lg mt-6 p-6">
         <div class="overflow-x-auto">
             <div class="flex flex-col mb-4">
                 <h6 class="text-lg font-bold mb-2">LIST ARTIKEL</h6>
@@ -24,109 +24,51 @@
                 <div class="flex flex-wrap justify-between items-center gap-2 mt-5">
                     @if ($authorize->add == '1')
                         <button
-                            class="bg-pink-300 hover:bg-pink-400 text-white font-semibold py-2 px-4 rounded-lg flex items-center"
+                            class="bg-purple-300 hover:bg-purple-400 text-white font-semibold py-2 px-4 rounded-lg flex items-center"
                             onclick="window.location='{{ URL::to($url . '/add') }}'">
                             <i class="fas fa-plus"></i>
                             <span class="font-weight-bold ml-1">Tambah</span>
                         </button>
                     @endif
                     <input type="text" id="searchInput" placeholder="Search..."
-                        class="border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-pink-100 w-full md:w-auto">
+                        class="border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-100 w-full md:w-auto">
                 </div>
             </div>
 
             <div class="overflow-x-auto">
                 <table id="artikelTable" class="table-fixed border-gray-300 text-sm w-full">
-                    {{-- <thead>
-                        <tr class="bg-gray-100 text-sm leading-normal">
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">No</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">ID Artikel</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">Nama Penulis</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">Judul Artikel</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">Isi Artikel</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">Tanggal Rilis</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">Gambar</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">Status</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span>Aksi</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                        </tr>
-                    </thead> --}}
                     <thead>
                         <tr class="bg-gray-100 text-sm leading-normal">
                             <th class="py-3 px-2 min-w-[50px] text-left truncate cursor-pointer sort" data-sort="no">
-                                No <i class="fas fa-sort ml-1"></i>
+                                No
                             </th>
                             <th class="py-3 px-2 min-w-[80px] text-left truncate cursor-pointer sort"
                                 data-sort="idartikel">
-                                ID Artikel <i class="fas fa-sort ml-1"></i>
+                                ID Artikel
                             </th>
                             <th class="py-3 px-2 min-w-[150px] text-left truncate cursor-pointer sort"
                                 data-sort="nama_penulis">
-                                Nama Penulis <i class="fas fa-sort ml-1"></i>
+                                Nama Penulis
                             </th>
                             <th class="py-3 px-2 min-w-[180px] text-left truncate cursor-pointer sort"
                                 data-sort="judul_artikel">
-                                Judul Artikel <i class="fas fa-sort ml-1"></i>
+                                Judul Artikel
                             </th>
                             <th class="py-3 px-2 min-w-[200px] text-left truncate cursor-pointer sort"
                                 data-sort="isi_artikel">
-                                Isi Artikel <i class="fas fa-sort ml-1"></i>
+                                Isi Artikel
                             </th>
                             <th class="py-3 px-2 min-w-[200px] text-left truncate cursor-pointer sort"
                                 data-sort="tanggal_rilis">
-                                Tanggal Rilis <i class="fas fa-sort ml-1"></i>
+                                Tanggal Rilis
                             </th>
                             <th class="py-3 px-2 min-w-[200px] text-left truncate cursor-pointer sort"
                                 data-sort="gambar">
-                                Gambar <i class="fas fa-sort ml-1"></i>
+                                Gambar
                             </th>
                             <th class="py-3 px-2 min-w-[200px] text-left truncate cursor-pointer sort"
                                 data-sort="status">
-                                Status<i class="fas fa-sort ml-1"></i>
+                                Status
                             </th>
                             <th class="py-3 px-2 min-w-[00px] text-left truncate">
                                 Aksi
@@ -163,13 +105,15 @@
                                 </td>
                                 <td class="py-3 px-2 flex flex-wrap gap-2">
                                     {{-- Tombol Lihat --}}
-                                    <button class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
+                                    <button
+                                        class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
                                         onclick="window.location='{{ route('admin.artikel.show', encrypt($art->idartikel)) }}'">
                                         <i class="fas fa-eye"></i> Lihat
                                     </button>
 
                                     {{-- Tombol Edit --}}
-                                    <button class="bg-green-500 hover:bg-green-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
+                                    <button
+                                        class="bg-green-500 hover:bg-green-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
                                         onclick="window.location='{{ route('admin.artikel.edit', encrypt($art->idartikel)) }}'">
                                         <i class="fas fa-edit"></i> Edit
                                     </button>
@@ -185,21 +129,6 @@
                                             <i class="fas fa-trash"></i> Hapus
                                         </button>
                                     </form>
-
-                                    {{-- Tombol Ubah Status
-                                    <form method="POST">
-                                        @csrf
-                                        @method('PUT')
-                                        <select name="status" onchange="this.form.submit()"
-                                            class="bg-gray-200 text-gray-700 py-1 px-2 rounded">
-                                            <option value="draft" {{ $art->status == 'draft' ? 'selected' : '' }}>
-                                                Draft</option>
-                                            <option value="published"
-                                                {{ $art->status == 'published' ? 'selected' : '' }}>Published</option>
-                                            <option value="archived"
-                                                {{ $art->status == 'archived' ? 'selected' : '' }}>Archived</option>
-                                        </select>
-                                    </form> --}}
                                 </td>
                             </tr>
                         @endforeach
@@ -211,62 +140,76 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @push('styles')
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+    @endpush
+    <style>
+        div.dataTables_filter {
+            display: none;
+        }
+    </style>
 
-    <script>
-        // Fungsi untuk search
-        document.getElementById('searchInput').addEventListener('keyup', function() {
-            let searchValue = this.value.toLowerCase();
-            let rows = document.querySelectorAll('#modulTable tbody tr');
-            rows.forEach(row => {
-                let text = row.innerText.toLowerCase();
-                row.style.display = text.includes(searchValue) ? '' : 'none';
-            });
-        });
+    @push('scripts')
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    @endpush
 
-        // Konfirmasi hapus menggunakan SweetAlert2
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    Swal.fire({
-                        title: "Apakah Anda yakin?",
-                        text: "Data yang dihapus tidak dapat dikembalikan!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#d33",
-                        cancelButtonColor: "#3085d6",
-                        confirmButtonText: "Ya, hapus!",
-                        cancelButtonText: "Batal",
-                        scrollbarPadding: false
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            this.closest('form').submit();
-                        }
+    @push('scripts')
+        <script>
+            $(document).ready(function() {
+                // Inisialisasi DataTable sekaligus menyimpan ke variabel `table`
+                var table = $('#artikelTable').DataTable({
+                    responsive: true,
+                    language: {
+                        lengthMenu: "Tampilkan _MENU_ data",
+                        info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
+                        paginate: {
+                            first: "Pertama",
+                            last: "Terakhir",
+                            next: "Berikutnya",
+                            previous: "Sebelumnya"
+                        },
+                        zeroRecords: "Tidak ada data yang cocok",
+                        infoEmpty: "Menampilkan 0 data",
+                        infoFiltered: "(difilter dari _MAX_ total data)"
+                    }
+                });
+
+                // Fitur pencarian manual
+                $('#searchInput').on('keyup', function() {
+                    table.search(this.value).draw();
+                });
+
+                // Konfirmasi hapus menggunakan SweetAlert2
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        Swal.fire({
+                            title: "Apakah Anda yakin?",
+                            text: "Data yang dihapus tidak dapat dikembalikan!",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#d33",
+                            cancelButtonColor: "#3085d6",
+                            confirmButtonText: "Ya, hapus!",
+                            cancelButtonText: "Batal",
+                            scrollbarPadding: false
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.closest('form').submit();
+                            }
+                        });
                     });
                 });
-            });
-        });
 
-        // Auto-hide alert setelah 3 detik
-        setTimeout(() => {
-            document.querySelectorAll('.alert').forEach(alert => {
-                alert.style.transition = "opacity 0.5s ease-out";
-                alert.style.opacity = "0";
-                setTimeout(() => alert.remove(), 500); // Hapus elemen setelah efek fade-out selesai
+                // Auto-hide alert setelah 3 detik
+                setTimeout(() => {
+                    document.querySelectorAll('.alert').forEach(alert => {
+                        alert.style.transition = "opacity 0.5s ease-out";
+                        alert.style.opacity = "0";
+                        setTimeout(() => alert.remove(), 500);
+                    });
+                }, 3000);
             });
-        }, 3000);
-
-        // Fungsi untuk sort
-        function sortTable(columnIndex) {
-            const table = document.getElementById('artikelTable');
-            const rows = Array.from(table.rows).slice(1);
-            let isAsc = table.getAttribute('data-sort-asc') === 'true';
-            rows.sort((a, b) => {
-                const aText = a.cells[columnIndex].innerText.trim();
-                const bText = b.cells[columnIndex].innerText.trim();
-                return isAsc ? aText.localeCompare(bText) : bText.localeCompare(aText);
-            });
-            rows.forEach(row => table.tBodies[0].appendChild(row));
-            table.setAttribute('data-sort-asc', !isAsc);
-        }
-    </script>
+        </script>
+    @endpush
 </x-app-layout>

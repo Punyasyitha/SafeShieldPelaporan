@@ -1,7 +1,7 @@
 <x-app-layout>
     <form id="iniForm" action="{{ route('admin.submateri.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <div class="w-full bg-white shadow-lg rounded-lg p-6">
+        <div class="w-full bg-white shadow-lg rounded-lg mt-6 p-6">
             <div class="overflow-x-auto">
                 <div class="flex flex-col mb-4">
                     <h6 class="text-lg font-bold mb-2">INSERT SUB MATERI</h6>
@@ -15,7 +15,7 @@
 
                         @if ($authorize->add == '1')
                             <button id="submitForm"
-                                class="bg-pink-300 hover:bg-pink-400 text-white font-semibold py-2 px-4 rounded-lg">
+                                class="bg-purple-300 hover:bg-purple-400 text-white font-semibold py-2 px-4 rounded-lg">
                                 <i class="fas fa-floppy-disk me-1"></i>
                                 <span class="font-weight-bold">Simpan</span>
                             </button>
@@ -32,7 +32,7 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Nama Materi</label>
                     <select name="materiid" required
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                         @foreach ($materi as $mtr)
                             <option value="{{ $mtr->idmateri }}">{{ $mtr->judul_materi }}</option>
                         @endforeach
@@ -42,13 +42,13 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Judul Sub Materi</label>
                     <input type="text" name="judul_submateri" required
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Isi Materi</label>
                     <textarea name="isi" required rows="4"
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200 resize-none"></textarea>
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 resize-none"></textarea>
                 </div>
             </div>
         </div>

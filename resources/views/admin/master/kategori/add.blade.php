@@ -1,7 +1,7 @@
 <x-app-layout>
     <form id="iniForm" action="{{ route('admin.master.kategori.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <div class="w-full bg-white shadow-lg rounded-lg p-6">
+        <div class="w-full bg-white shadow-lg rounded-lg mt-6 p-6">
             <div class="overflow-x-auto">
                 <div class="flex flex-col mb-4">
                     <h6 class="text-lg font-bold mb-2">INSERT KATEGORI</h6>

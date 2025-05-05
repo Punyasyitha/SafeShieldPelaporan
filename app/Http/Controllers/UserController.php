@@ -18,12 +18,38 @@ class UserController extends BaseController
 
     public function index()
     {
-        // ✅ Set hak akses untuk admin (misalnya, hanya admin yang bisa menambah)
-        $authorize = (object)['add' => '1'];
+        $data = [
+            'authorize' => (object)['add' => '1'],
+            'url' => url('user/dashboard'),
+            'list' => DB::table('artikel')
+                ->join('mst_penulis', 'artikel.penulisid', '=', 'mst_penulis.idpenulis')
+                ->select('artikel.*', 'mst_penulis.nama_penulis')
+                ->orderBy('artikel.idartikel', 'asc')
+                ->paginate(10),
+        ];
+        // dd($data['list']);
 
-        return view('user.dashboard', [
-            'authorize' => $authorize, // 🔹 Kirim ke view
-            'url_menu' => 'user/dashboard',
-        ]);
+        return view('user.dashboard', $data);
+    }
+
+    public function show($id)
+    {
+        try {
+            $idartikel = decrypt($id);
+        } catch (\Exception $e) {
+            abort(404, 'Artikel tidak ditemukan');
+        }
+
+        $artikel = DB::table('artikel')
+            ->join('mst_penulis', 'artikel.penulisid', '=', 'mst_penulis.idpenulis')
+            ->select('artikel.*', 'mst_penulis.nama_penulis')
+            ->where('artikel.idartikel', $idartikel)
+            ->first();
+
+        if (!$artikel) {
+            abort(404, 'Artikel tidak ditemukan');
+        }
+
+        return view('user.artikel.show', compact('artikel'));
     }
 }

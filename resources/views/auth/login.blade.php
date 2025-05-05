@@ -1,4 +1,4 @@
-{{-- <x-guest-layout>
+<x-guest-layout>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -44,183 +44,72 @@
             </x-primary-button>
         </div>
     </form>
-</x-guest-layout> --}}
-<!doctype html>
-<html lang="en">
+</x-guest-layout>
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
-        rel="stylesheet">
-</head>
 
-<body class="g-sidenav-show" style="background-color: #FFF;">
+{{-- <x-guest-layout>
     <main class="main-content mt-0 ps">
         <section>
             <div class="page-header min-vh-100">
-                <div class="container-fluid vh-100">
-                    <div class="row h-100 d-flex align-items-center justify-content-center">
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $item)
-                                        <li>{{ $item }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-                        <!-- Bagian Kiri: Form Sign In -->
-                        <div class="col-lg-4 col-md-7 mx-auto">
-                            <div class="card card-plain p-4"
-                                style="background-color: #FFF; border: none; box-shadow: none;">
-                                <div class="card-header pb-3 text-start" style="background-color: #FFF;">
-                                    <h4 class="font-weight-bolder text-center"style="font-family: 'Playfair Display', sans-serif;
-                                        font-size: 28px; font-weight: 700; color: #333;">
-                                        Get Started Now</h4>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-4 col-lg-5 col-md-7 d-flex flex-column mx-lg-0 mx-auto">
+                            <div class="card card-plain">
+                                <div class="card-header pb-0 text-start">
+                                    <h4 class="font-weight-bolder">Sign In</h4>
+                                    <p class="mb-0">Enter your email and password to sign in</p>
                                 </div>
                                 <div class="card-body">
-                                    <form action="" method="POST">
-                                        @csrf
+                                    <form role="form">
                                         <div class="mb-3">
-                                            <label for="email" class="form-label">Email</label>
-                                            <input type="email" value="{{ old('email') }}" name="email"
-                                                class="form-control form-control-lg" required>
+                                            <input type="email" class="form-control form-control-lg"
+                                                placeholder="Email" aria-label="Email">
                                         </div>
                                         <div class="mb-3">
-                                            <label for="password" class="form-label">Password</label>
-                                            <input type="password" name="password" class="form-control form-control-lg"
-                                                required>
+                                            <input type="email" class="form-control form-control-lg"
+                                                placeholder="Password" aria-label="Password">
                                         </div>
                                         <div class="form-check form-switch">
                                             <input class="form-check-input" type="checkbox" id="rememberMe">
                                             <label class="form-check-label" for="rememberMe">Remember me</label>
                                         </div>
                                         <div class="text-center">
-                                            <button type="submit" class="btn btn-lg btn-primary w-100 mt-4 mb-0"
-                                                style="background-color: #DD88CF; border: 2px solid #DD88CF; color: #fff;">Login</button>
+                                            <button type="button"
+                                                class="btn btn-lg btn-primary btn-lg w-100 mt-4 mb-0">Sign
+                                                in</button>
                                         </div>
                                     </form>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Bagian Kanan: Gambar -->
-                        <div class="col-lg-6 d-none d-lg-flex p-0" style="height: 100vh;">
-                            <div class="position-relative w-100 h-100 overflow-hidden d-flex flex-column align-items-center justify-content-center"
-                                style="background-image: url('{{ asset('assets/images/Background.png') }}');
-                                    background-size: cover; background-position: center; background-repeat: no-repeat; height: 100%; width: 100%;">
-
-                                <!-- 🔥 Overlay Transparan -->
-                                <div
-                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                                        background-image: url('{{ asset('assets/images/Vector.png') }}');
-                                            background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.7; z-index: 1;">
-                                </div>
-
-                                <!-- ✨ Konten Teks -->
-                                <div class="text-center text-white" style="z-index: 2;">
-                                    <h3 class="font-weight-bolder">"Attention is the new currency"</h3>
-                                    <p>The more effortless the writing looks, the more effort the writer actually put
-                                        into the process.</p>
+                                <div class="card-footer text-center pt-0 px-lg-2 px-1">
+                                    <p class="mb-4 text-sm mx-auto">
+                                        Don't have an account?
+                                        <a href="javascript:;" class="text-primary text-gradient font-weight-bold">Sign
+                                            up</a>
+                                    </p>
                                 </div>
                             </div>
                         </div>
-
+                        <div
+                            class="col-6 d-lg-flex d-none h-100 my-auto pe-0 position-absolute top-0 end-0 text-center justify-content-center flex-column">
+                            <div class="position-relative bg-gradient-primary h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center overflow-hidden"
+                                style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-ill.jpg');
+                  background-size: cover;">
+                                <span class="mask bg-gradient-primary opacity-6"></span>
+                                <h4 class="mt-5 text-white font-weight-bolder position-relative">"Attention is the new
+                                    currency"</h4>
+                                <p class="text-white position-relative">The more effortless the writing looks, the more
+                                    effort the writer actually put into the process.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
-    </main>
-</body>
-
-</html>
-
-{{-- <x-guest-layout>
-    <main class="main-content mt-0 ps">
-        <section>
-            <div class="page-header min-vh-100">
-                <div class="container-fluid vh-100">
-                    <div class="row h-100 d-flex align-items-center justify-content-center">
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $item)
-                                        <li>{{ $item }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-                        <!-- Bagian Kiri: Form Sign In -->
-                        <div class="col-lg-4 col-md-7 mx-auto">
-                            <div class="card card-plain p-4"
-                                style="background-color: #FFF; border: none; box-shadow: none;">
-                                <div class="card-header pb-3 text-start" style="background-color: #FFF;">
-                                    <h4 class="font-weight-bolder text-center"
-                                        style="font-family: 'Playfair Display', sans-serif;
-                                        font-size: 28px; font-weight: 700; color: #333;">
-                                        Get Started Now
-                                    </h4>
-                                </div>
-                                <div class="card-body">
-                                    <form action="{{ route('login') }}" method="POST">
-                                        @csrf
-                                        <div class="mb-3">
-                                            <label for="email" class="form-label">Email</label>
-                                            <input type="email" value="{{ old('email') }}" name="email"
-                                                class="form-control form-control-lg" required>
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="password" class="form-label">Password</label>
-                                            <input type="password" name="password" class="form-control form-control-lg"
-                                                required>
-                                        </div>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="rememberMe"
-                                                name="remember">
-                                            <label class="form-check-label" for="rememberMe">Remember me</label>
-                                        </div>
-                                        <div class="text-center">
-                                            <button type="submit" class="btn btn-lg btn-primary w-100 mt-4 mb-0"
-                                                style="background-color: #DD88CF; border: 2px solid #DD88CF; color: #fff;">
-                                                Login
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Bagian Kanan: Gambar -->
-                        <div class="col-lg-6 d-none d-lg-flex p-0" style="height: 100vh;">
-                            <div class="position-relative w-100 h-100 overflow-hidden d-flex flex-column align-items-center justify-content-center"
-                                style="background-image: url('{{ asset('assets/images/Background.png') }}');
-                                    background-size: cover; background-position: center; background-repeat: no-repeat; height: 100%; width: 100%;">
-
-                                <!-- 🔥 Overlay Transparan -->
-                                <div
-                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                                        background-image: url('{{ asset('assets/images/Vector.png') }}');
-                                            background-size: cover; background-position: center; background-repeat: no-repeat; opacity: 0.7; z-index: 1;">
-                                </div>
-
-                                <!-- ✨ Konten Teks -->
-                                <div class="text-center text-white" style="z-index: 2;">
-                                    <h3 class="font-weight-bolder">"Attention is the new currency"</h3>
-                                    <p>The more effortless the writing looks, the more effort the writer actually put
-                                        into the process.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+            <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+        </div>
+        <div class="ps__rail-y" style="top: 0px; right: 0px;">
+            <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+        </div>
     </main>
 </x-guest-layout> --}}

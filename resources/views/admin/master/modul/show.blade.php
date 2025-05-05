@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="w-full bg-white shadow-lg rounded-lg p-6">
+    <div class="w-full bg-white shadow-lg rounded-lg mt-6 p-6">
         <div class="overflow-x-auto">
             <div class="flex flex-col mb-4">
                 <h6 class="text-lg font-bold mb-2">VIEW MODUL</h6>
@@ -30,19 +30,19 @@
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Nama Modul</label>
                 <input type="text" name="nama_modul" value="{{ $modul->nama_modul }}" readonly
-                    class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                    class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Deskripsi</label>
                 <textarea name="deskripsi" readonly rows="4"
-                    class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200 resize-none">{{ $modul->deskripsi }} </textarea>
+                    class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 resize-none">{{ $modul->deskripsi }} </textarea>
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Tahun Terbit</label>
                 <input type="date" name="tahun_terbit" value="{{ $modul->tahun_terbit }}" readonly required
-                    class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-200">
+                    class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
             </div>
         </div>
     </div>
