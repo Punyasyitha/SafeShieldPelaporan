@@ -96,12 +96,12 @@ class AppServiceProvider extends ServiceProvider
                     [
                         'title' => 'Pengaduan',
                         'icon'  => 'fas fa-exclamation-triangle',
-                        'route' => 'user.pengaduan',
+                        'route' => 'user.pengaduan.add',
                     ],
                     [
                         'title' => 'Progress Pengaduan',
                         'icon'  => 'fas fa-history',
-                        'route' => 'user.progress.list',
+                        'route' => 'user.pengaduan.list',
                     ],
                 ];
             }

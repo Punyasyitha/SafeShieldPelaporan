@@ -39,7 +39,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($list as $index => $item)
+                    @forelse ($list as $item)
                         <tr class="border-t border-gray-200">
                             <td class="py-3 px-2 ">{{ $loop->iteration }}</td>
                             <td class="py-3 px-2 ">
@@ -58,12 +58,22 @@
                             <td class="py-3 px-2 ">{{ $item->tmp_kejadian }}</td>
                             <td class="py-3 px-2 ">{{ Str::limit(strip_tags($item->detail), 60) }}</td>
                             <td class="py-3 px-2 ">{{ Str::limit(strip_tags($item->keterangan), 60) }}</td>
-                            <td class="py-3 px-2 ">
-                                <div x-data="{ open: false }">
-                                    <button @click="open = true"
-                                        class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-3 rounded items-center gap-2">
-                                        Lihat
-                                    </button>
+                            <td class="py-3 px-2">
+                                <div class="flex flex-wrap gap-2" x-data="{ open: false }">
+                                    @if ($status === 'Verifikasi')
+                                        <!-- Tombol Edit -->
+                                        <button
+                                            class="bg-green-500 hover:bg-green-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
+                                            onclick="window.location='{{ route('user.pengaduan.edit', encrypt($item->idpengaduan)) }}'">
+                                            Edit
+                                        </button>
+                                    @else
+                                        <!-- Tombol Lihat -->
+                                        <button @click="open = true"
+                                            class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-3 rounded items-center gap-2">
+                                            Lihat
+                                        </button>
+                                    @endif
 
                                     <!-- Modal -->
                                     <div x-show="open" x-transition x-cloak
@@ -79,22 +89,29 @@
                                                         {{ $status }}
                                                     </span>
                                                 </div>
-                                                <div><span class="font-semibold">Tanggal Kejadian:</span>
+                                                <div>
+                                                    <span class="font-semibold">Tanggal Kejadian:</span>
                                                     {{ \Carbon\Carbon::parse($item->tanggal_kejadian)->translatedFormat('d F Y') }}
                                                 </div>
-                                                <div><span class="font-semibold">Nama Terlapor:</span>
-                                                    {{ $item->nama_terlapor }}</div>
-                                                <div><span class="font-semibold">Tempat Kejadian:</span>
-                                                    {{ $item->tmp_kejadian }}</div>
+                                                <div>
+                                                    <span class="font-semibold">Nama Terlapor:</span>
+                                                    {{ $item->nama_terlapor }}
+                                                </div>
+                                                <div>
+                                                    <span class="font-semibold">Tempat Kejadian:</span>
+                                                    {{ $item->tmp_kejadian }}
+                                                </div>
                                                 <div>
                                                     <span class="font-semibold">Detail Kejadian:</span>
                                                     <div class="border p-2 mt-1 rounded bg-gray-50">
-                                                        {!! nl2br(e($item->detail)) !!}</div>
+                                                        {!! nl2br(e($item->detail)) !!}
+                                                    </div>
                                                 </div>
                                                 <div>
                                                     <span class="font-semibold">Keterangan:</span>
                                                     <div class="border p-2 mt-1 rounded bg-gray-50">
-                                                        {!! nl2br(e($item->keterangan)) !!}</div>
+                                                        {!! nl2br(e($item->keterangan)) !!}
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div class="mt-6 text-right">
@@ -107,6 +124,8 @@
                                     </div>
                                 </div>
                             </td>
+
+
                         </tr>
                     @empty
                         <tr>

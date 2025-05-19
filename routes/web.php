@@ -124,7 +124,9 @@ Route::middleware(['auth', 'user'])->prefix('user')->group(function () {
     Route::get('/artikel/show/{id}', [UserController::class, 'show'])->name('user.artikel.show');
     Route::get('/materi', [TerimaMateriController::class, 'index'])->name('user.materi.list');
     Route::get('/materi/show/{id}', [TerimaMateriController::class, 'show'])->name('user.materi.show');
-    Route::get('/pengaduan', [FormPengaduanController::class, 'pengaduan'])->name('user.pengaduan');
+    Route::get('/pengaduan/add', [FormPengaduanController::class, 'add'])->name('user.pengaduan.add');
     Route::post('/pengaduan/store', [FormPengaduanController::class, 'store'])->name('user.pengaduan.store');
-    Route::get('/progress', [ProgressController::class, 'index'])->name('user.progress.list');
+    Route::get('/pengaduan/list', [FormPengaduanController::class, 'index'])->name('user.pengaduan.list');
+    Route::get('/pengaduan/edit/{id}', [FormPengaduanController::class, 'edit'])->name('user.pengaduan.edit');
+    Route::put('/pengaduan/update/{id}', [FormPengaduanController::class, 'update'])->name('user.pengaduan.update');
 });
