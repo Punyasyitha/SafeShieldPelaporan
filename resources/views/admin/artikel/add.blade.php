@@ -61,7 +61,8 @@
                     <label class="block text-sm font-medium text-gray-700">Gambar Artikel</label>
                     <input type="file" name="gambar" accept="image/*" required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
-                    <small class="text-gray-500">Format yang diperbolehkan: JPG, JPEG, PNG. Maksimal ukuran: 100MB</small>
+                    <small class="text-gray-500">Format yang diperbolehkan: JPG, JPEG, PNG. Maksimal ukuran:
+                        100MB</small>
                 </div>
 
                 <div class="mb-4">
@@ -79,12 +80,9 @@
     </form>
 
     <script>
-        function updateBorder() {
-            const select = document.getElementById('statusSelect');
-            select.className = "w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 " +
-                (select.value === 'draft' ? 'focus:ring-red-400' :
-                    select.value === 'published' ? 'focus:ring-green-400' :
-                    'focus:ring-orange-400');
-        }
+        document.getElementById("submitForm").addEventListener("click", function(e) {
+            const status = document.getElementById("statusSelect").value;
+        });
     </script>
+
 </x-app-layout>

@@ -8,6 +8,7 @@ use App\Http\Controllers\MateriController;
 use App\Http\Controllers\ModulController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PengaduanController;
+use App\Http\Controllers\PengaduanRekapController;
 use App\Http\Controllers\PenulisController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProgressController;
@@ -113,6 +114,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/pengaduan/edit/{id}', [PengaduanController::class, 'edit'])->name('admin.pengaduan.edit');
     Route::put('/pengaduan/update/{id}', [PengaduanController::class, 'update'])->name('admin.pengaduan.update');
     Route::delete('pengaduan/delete/{id}', [PengaduanController::class, 'delete'])->name('admin.pengaduan.delete');
+
+    // Route untuk Report
+    Route::prefix('report')->name('admin.report.')->group(function () {
+        Route::prefix('pengaduan')->name('pengaduan.')->group(function () {
+            Route::get('/', [PengaduanRekapController::class, 'index'])->name('filter');
+            Route::get('/result', [PengaduanRekapController::class, 'result'])->name('result');
+            Route::get('export/excel', [PengaduanRekapController::class, 'exportExcel'])->name('excel');
+            Route::get('export/pdf', [PengaduanRekapController::class, 'exportPdf'])->name('pdf');
+        });
+    });
 });
 
 Route::middleware(['auth', 'satgasppks'])->group(function () {

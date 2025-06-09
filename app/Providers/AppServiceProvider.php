@@ -79,6 +79,17 @@ class AppServiceProvider extends ServiceProvider
                         'icon'  => 'fas fa-clipboard',
                         'route' => 'admin.pengaduan.list',
                     ],
+                    [
+                        'title'   => 'Report',
+                        'icon'    => 'fas fa-clipboard-list',
+                        'submenu' => [
+                            [
+                                'title' => 'Rekap Pengaduan',
+                                'icon'  => 'fas fa-check-circle',
+                                'route' => 'admin.report.pengaduan.filter'
+                            ],
+                        ],
+                    ],
                 ];
             } elseif ($user && $user->role === 'user') {
                 // Menu untuk USER

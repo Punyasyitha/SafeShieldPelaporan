@@ -3,15 +3,15 @@
 <nav class="bg-transparent text-gray-100 px-6 py-4 flex justify-between items-center">
 
     <!-- Breadcrumb -->
-    <div class="flex-1 min-w-0">
-        <nav aria-label="breadcrumb" class="mb-1 pl-2">
-            <ol class=" flex space-x-2 text-sm text-white">
+    <div class="flex-1 min-w-0 ml-8 sm:ml-10 md:ml-20 lg:ml-40 xl:ml-[280px]">
+        <nav aria-label="breadcrumb" class="mb-1">
+            <ol class="flex space-x-2 text-sm text-white">
                 <li class="truncate max-w-[150px]">
                     <a href="javascript:;" class="hover:underline">{{ $title }}</a>
                 </li>
             </ol>
         </nav>
-        <h6 class=" text-white text-m truncate max-w-[200px] pl-2">{{ $title }}</h6>
+        <h6 class="text-white text-md truncate max-w-[200px]">{{ $title }}</h6>
     </div>
 
     <!-- User Dropdown -->

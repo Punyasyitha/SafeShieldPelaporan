@@ -93,14 +93,16 @@
                                 <td class="py-3 px-2 flex flex-wrap gap-2">
                                     <button
                                         class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
+                                        title="Lihat"
                                         onclick="window.location='{{ url($url . '/show/' . encrypt($ktg->idkategori)) }}'">
-                                        <i class="fas fa-eye"></i> Lihat
+                                        <i class="fas fa-eye"></i>
                                     </button>
 
                                     <button
                                         class="bg-green-500 hover:bg-green-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
+                                        title="Edit"
                                         onclick="window.location='{{ url($url . '/edit/' . encrypt($ktg->idkategori)) }}'">
-                                        <i class="fas fa-edit"></i> Edit
+                                        <i class="fas fa-edit"></i>
                                     </button>
 
                                     <form
@@ -110,8 +112,8 @@
                                         @method('DELETE')
                                         <button type="button"
                                             class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded delete-btn inline-flex items-center gap-2"
-                                            data-id="{{ encrypt($ktg->idkategori) }}">
-                                            <i class="fas fa-trash"></i> Hapus
+                                            title="Hapus" data-id="{{ encrypt($ktg->idkategori) }}">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
                                 </td>

@@ -80,16 +80,18 @@
                             <td class="py-3 px-2 truncate" title="{{ $pgd->keterangan }}">
                                 {{ Str::limit(strip_tags($pgd->keterangan), 30, '...') }}</td>
                             <td class="py-3 px-2 truncate">
-                                <div class="flex flex-wrap justify-center gap-2">
+                                <div class="flex flex-wrap gap-2">
                                     <button
                                         class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-2 rounded items-center gap-2"
+                                        title="Lihat"
                                         onclick="window.location='{{ route('admin.pengaduan.show', encrypt($pgd->idpengaduan)) }}'">
-                                        <i class="fas fa-eye"></i> Lihat
+                                        <i class="fas fa-eye"></i>
                                     </button>
                                     <button
                                         class="bg-green-500 hover:bg-green-600 text-white inline-flex py-1 px-2 rounded items-center gap-2"
+                                        title="Edit"
                                         onclick="window.location='{{ route('admin.pengaduan.edit', encrypt($pgd->idpengaduan)) }}'">
-                                        <i class="fas fa-edit"></i> Edit
+                                        <i class="fas fa-edit"></i>
                                     </button>
                                     <form action="{{ route('admin.pengaduan.delete', encrypt($pgd->idpengaduan)) }}"
                                         method="POST" class="delete-form">
@@ -97,8 +99,8 @@
                                         @method('DELETE')
                                         <button type="button"
                                             class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded delete-btn inline-flex items-center gap-2"
-                                            data-id="{{ encrypt($pgd->idpengaduan) }}">
-                                            <i class="fas fa-trash"></i> Hapus
+                                            title="Hapus" data-id="{{ encrypt($pgd->idpengaduan) }}">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
                                 </div>

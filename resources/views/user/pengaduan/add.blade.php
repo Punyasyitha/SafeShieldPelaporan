@@ -103,6 +103,9 @@
                 </div>
             </div>
 
+            {!! NoCaptcha::renderJs() !!}
+            {!! NoCaptcha::display() !!}
+
             {{-- <div class="mt-4">
                 <label class="block font-medium text-gray-700 font-sans">Kode Keamanan</label>
                 <div class="flex items-center space-x-3">
@@ -139,6 +142,25 @@
             const modal = document.getElementById('successModal');
             if (modal) modal.remove();
         }, 3000);
+
+        public
+        function rules() {
+            return [
+                ...
+                // kode di bawah ini yang kalian tambahkan
+                'g-recaptcha-response' => ['required', 'captcha']
+            ];
+        }
+
+        // atau jika kalian tidak menggunakan form request
+        // dan langsung melakukan validasi di controller
+        // menggunakan Validator class, bisa lihat kode di bawah ini
+
+        $validate = Validator::make(Input::all(), [
+            ...
+            // kode di bawah ini yang kalian tambahkan
+            'g-recaptcha-response' => 'required|captcha'
+        ]);
     </script>
 
 

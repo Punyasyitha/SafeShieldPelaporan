@@ -24,6 +24,7 @@ class UserController extends BaseController
             'list' => DB::table('artikel')
                 ->join('mst_penulis', 'artikel.penulisid', '=', 'mst_penulis.idpenulis')
                 ->select('artikel.*', 'mst_penulis.nama_penulis')
+                ->where('artikel.status', 'published') // hanya tampilkan yang statusnya 'published'
                 ->orderBy('artikel.idartikel', 'asc')
                 ->paginate(10),
         ];

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Mews\Captcha\Facades\Captcha;
 use App\Models\Pengaduan;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -17,11 +18,13 @@ class FormPengaduanController extends Controller
 
     function index()
     {
+        $userid = Auth::id();
         $data = [
             'url' => url('user/progress'),
             'list' => DB::table('pengaduan')
                 ->join('mst_sts_pengaduan', 'pengaduan.statusid', '=', 'mst_sts_pengaduan.idstatus')
                 ->select('pengaduan.*', 'mst_sts_pengaduan.nama_status')
+                ->where('pengaduan.userid', $userid)
                 ->orderBy('pengaduan.idpengaduan', 'asc')
                 ->paginate(10),
             'warnaStatus' => [
@@ -32,7 +35,7 @@ class FormPengaduanController extends Controller
                 'Selesai' => 'bg-green-200 text-green-800',
             ],
         ];
-        // dd($data['list']);
+        //dd($data['list']);
 
         return view('user.pengaduan.list', $data);
     }
@@ -41,6 +44,7 @@ class FormPengaduanController extends Controller
     {
         // Validasi data
         //dd($request->all());
+        $userid = Auth::id();
         $request->validate([
             'nama_pengadu'     => 'required|string|max:100',
             'no_telepon'       => 'required|string|max:20',
@@ -50,6 +54,7 @@ class FormPengaduanController extends Controller
             'tanggal_kejadian' => 'required|date',
             'detail'           => 'required|string',
             'bukti'            => 'nullable|file|mimes:jpg,jpeg,png,pdf,mp4,mp3,wav|max:5120',
+            'g-recaptcha-response' => 'required|captcha',
         ]);
 
         DB::beginTransaction();
@@ -74,6 +79,7 @@ class FormPengaduanController extends Controller
                 'idpengaduan'      => $newId,
                 'statusid'         => '1',
                 'nama_pengadu'     => $request->nama_pengadu,
+                'userid'           => $userid,
                 'no_telepon'       => $request->no_telepon,
                 'email'            => $request->email,
                 'nama_terlapor'    => $request->nama_terlapor,

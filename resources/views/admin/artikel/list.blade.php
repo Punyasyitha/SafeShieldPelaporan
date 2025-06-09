@@ -42,7 +42,7 @@
                             <th class="py-3 px-2 min-w-[50px] text-left truncate cursor-pointer sort" data-sort="no">
                                 No
                             </th>
-                            <th class="py-3 px-2 min-w-[80px] text-left truncate cursor-pointer sort"
+                            <th class="py-3 px-2 min-w-[50px] text-left truncate cursor-pointer sort"
                                 data-sort="idartikel">
                                 ID Artikel
                             </th>
@@ -107,15 +107,17 @@
                                     {{-- Tombol Lihat --}}
                                     <button
                                         class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
+                                        title="Lihat"
                                         onclick="window.location='{{ route('admin.artikel.show', encrypt($art->idartikel)) }}'">
-                                        <i class="fas fa-eye"></i> Lihat
+                                        <i class="fas fa-eye"></i>
                                     </button>
 
                                     {{-- Tombol Edit --}}
                                     <button
                                         class="bg-green-500 hover:bg-green-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
+                                        title="Edit"
                                         onclick="window.location='{{ route('admin.artikel.edit', encrypt($art->idartikel)) }}'">
-                                        <i class="fas fa-edit"></i> Edit
+                                        <i class="fas fa-edit"></i>
                                     </button>
 
                                     {{-- Tombol Hapus --}}
@@ -125,8 +127,8 @@
                                         @method('DELETE')
                                         <button type="button"
                                             class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded delete-btn inline-flex items-center gap-2"
-                                            data-id="{{ encrypt($art->idartikel) }}">
-                                            <i class="fas fa-trash"></i> Hapus
+                                            title="Hapus" data-id="{{ encrypt($art->idartikel) }}">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
                                 </td>

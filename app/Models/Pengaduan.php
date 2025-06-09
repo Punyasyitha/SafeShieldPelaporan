@@ -37,4 +37,10 @@ class Pengaduan extends Model
     {
         return $this->belongsTo(MstStatus::class, 'statusid', 'idstatus');
     }
+
+    // Laporan.php
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'userid');
+    }
 }

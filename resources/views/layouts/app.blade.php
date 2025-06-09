@@ -39,7 +39,6 @@
 </head>
 
 <body class="h-full g-sidenav-show bg-gray-100 relative flex flex-col">
-
     <!-- Background header -->
     <div class="absolute w-full min-h-[300px] top-0 z-0"
         style="background-image: url('{{ asset('assets/images/gradien-wall.png') }}'); background-size: cover; background-position: center;">
@@ -51,15 +50,14 @@
         @include('layouts.navbars.admin.sidebar')
 
         <!-- Main Content -->
-        <div id="content" class="flex-1 flex flex-col transition-all duration-300 ml-5">
+        <div id="content" class="flex-1 flex flex-col transition-all duration-300 ">
             <!-- Topbar -->
-            <div class="lg:pl-[250px] transition-all duration-300 pl-1">
+            <div>
                 @include('layouts.navbars.admin.topbar')
             </div>
 
             <!-- Page Content -->
-            <div
-                class="bg-transparent space-y-6 min-h-screen pr-6 flex flex-col pl-4 lg:pl-[280px] transition-all duration-300">
+            <div class="bg-transparent space-y-6 min-h-screen pr-6 flex flex-col pl-5 lg:ml-[280px] transition-all duration-300">
                 <main class="flex-grow">
                     <div class="w-full overflow-x-auto">
                         {{ $slot }}
@@ -70,27 +68,9 @@
         </div>
     </div>
 
-    <!-- JS Scripts -->
-    <script>
-        // Toggle Sidebar
-        document.getElementById('sidebarToggle')?.addEventListener('click', function() {
-            const sidebar = document.getElementById('sidebar');
-            const content = document.getElementById('content');
+    {{-- ✅ Hapus JS toggle manual karena sudah pakai AlpineJS --}}
 
-            sidebar?.classList.toggle('-translate-x-full');
-            content?.classList.toggle('lg:pl-[280px]');
-            content?.classList.toggle('lg:pl-4');
-        });
-
-        // Toggle Dropdown User
-        const userToggle = document.querySelector('[id^=userDropdown]')?.previousElementSibling;
-        const userDropdown = document.getElementById('userDropdown');
-
-        userToggle?.addEventListener('click', function() {
-            userDropdown?.classList.toggle('hidden');
-        });
-    </script>
-
+    {{-- Tambahkan AlpineJS --}}
     @push('scripts')
         <script src="//unpkg.com/alpinejs" defer></script>
     @endpush
