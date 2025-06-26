@@ -34,7 +34,7 @@
                     <select name="penulisid" required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                         @foreach ($penulis as $pns)
-                            <option value="{{ $pns->idpenulis }}">{{ $pns->nama_penulis }}</option>
+                            <option value="{{ $pns['IDPENULIS'] }}">{{ $pns['NAMA_PENULIS'] }}</option>
                         @endforeach
                     </select>
                 </div>

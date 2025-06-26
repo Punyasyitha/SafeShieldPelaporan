@@ -4,6 +4,7 @@
             <div class="flex flex-col mb-4">
                 <h6 class="text-lg font-bold mb-2">LIST KATEGORI</h6>
                 <hr class="horizontal dark mt-1 mb-2">
+
                 @if (session('success'))
                     <div class="alert bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4"
                         role="alert">
@@ -20,7 +21,6 @@
                     </div>
                 @endif
 
-                <!-- Tombol & Search Input (Responsif) -->
                 <div class="flex flex-wrap justify-between items-center gap-2 mt-5">
                     @if ($authorize->add == '1')
                         <button
@@ -35,85 +35,48 @@
                 </div>
             </div>
 
-            <!-- Wrapper untuk Responsivitas -->
             <div class="overflow-x-auto">
                 <table id="kategoriTable" class="table-fixed border-gray-300 text-sm w-full">
-                    {{-- <thead>
-                        <tr class="bg-gray-100 text-sm leading-normal">
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">No</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">ID Kategori</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">Nama Kategori</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span>Aksi</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                        </tr>
-                    </thead> --}}
                     <thead>
                         <tr class="bg-gray-100 text-sm leading-normal">
-                            <th class="py-3 px-2 min-w-[50px] text-left truncate cursor-pointer sort" data-sort="no">
+                            <th class="py-3 px-2 min-w-[50px] text-left cursor-pointer sort" data-sort="no">
                                 No
                             </th>
-                            <th class="py-3 px-2 min-w-[80px] text-left truncate cursor-pointer sort"
-                                data-sort="idkategori">
+                            <th class="py-3 px-2 min-w-[80px] text-left cursor-pointer sort" data-sort="IDKATEGORI">
                                 ID Kategori
                             </th>
-                            <th class="py-3 px-2 min-w-[150px] text-left truncate cursor-pointer sort"
-                                data-sort="nama_kategori">
+                            <th class="py-3 px-2 min-w-[150px] text-left cursor-pointer sort" data-sort="NAMA_KATEGORI">
                                 Nama Kategori
                             </th>
-                            <th class="py-3 px-2 min-w-[00px] text-left truncate">
-                                Aksi
-                            </th>
+                            <th class="py-3 px-2 text-left">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($list as $ktg)
+                        @foreach ($list as $index => $ktg)
                             <tr class="border-b border-gray-300">
-                                <td class="py-3 px-6 truncate">{{ $loop->iteration }}</td>
-                                <td class="py-3 px-2 truncate">{{ $ktg->idkategori }}</td>
-                                <td class="py-3 px-2 truncate">{{ $ktg->nama_kategori }}</td>
+                                <td class="py-3 px-2">{{ $index + 1 }}</td>
+                                <td class="py-3 px-2">{{ $ktg['IDKATEGORI'] ?? '-' }}</td>
+                                <td class="py-3 px-2">{{ $ktg['NAMA_KATEGORI'] ?? '-' }}</td>
                                 <td class="py-3 px-2 flex flex-wrap gap-2">
                                     <button
-                                        class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
-                                        title="Lihat"
-                                        onclick="window.location='{{ url($url . '/show/' . encrypt($ktg->idkategori)) }}'">
-                                        <i class="fas fa-eye"></i>
+                                        class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-3 rounded items-center"
+                                        onclick="window.location='{{ url($url . '/show/' . encrypt($ktg['IDKATEGORI'])) }}'">
+                                        <i class="fas fa-eye mr-1"></i>
                                     </button>
-
                                     <button
-                                        class="bg-green-500 hover:bg-green-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
-                                        title="Edit"
-                                        onclick="window.location='{{ url($url . '/edit/' . encrypt($ktg->idkategori)) }}'">
-                                        <i class="fas fa-edit"></i>
+                                        class="bg-green-500 hover:bg-green-600 text-white inline-flex py-1 px-3 rounded items-center"
+                                        onclick="window.location='{{ url($url . '/edit/' . encrypt($ktg['IDKATEGORI'])) }}'">
+                                        <i class="fas fa-edit mr-1"></i>
                                     </button>
-
                                     <form
-                                        action="{{ route('admin.master.kategori.delete', encrypt($ktg->idkategori)) }}"
+                                        action="{{ route('admin.master.kategori.delete', encrypt($ktg['IDKATEGORI'])) }}"
                                         method="POST" class="delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button"
-                                            class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded delete-btn inline-flex items-center gap-2"
-                                            title="Hapus" data-id="{{ encrypt($ktg->idkategori) }}">
-                                            <i class="fas fa-trash"></i>
+                                            class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded delete-btn inline-flex items-center"
+                                            title="Hapus" data-id="{{ encrypt($ktg['IDKATEGORI']) }}">
+                                            <i class="fas fa-trash mr-1"></i>
                                         </button>
                                     </form>
                                 </td>
@@ -121,55 +84,36 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div> <!-- Akhir Wrapper Tabel -->
-
-            <!-- Pagination -->
-            <div class="mt-4">
-                {{ $list->links() }}
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @push('styles')
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    @endpush
-    <style>
-        div.dataTables_filter {
-            display: none;
-        }
-    </style>
+        <style>
+            .sort-icon {
+                font-size: 0.75rem;
+                margin-left: 0.25rem;
+                color: #666;
+            }
 
-    @push('scripts')
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+            .sort-desc::after {
+                content: " ▼";
+            }
+        </style>
     @endpush
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @push('scripts')
         <script>
-            $(document).ready(function() {
-                // Inisialisasi DataTable sekaligus menyimpan ke variabel `table`
-                var table = $('#kategoriTable').DataTable({
-                    responsive: true,
-                    language: {
-                        lengthMenu: "Tampilkan _MENU_ data",
-                        info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
-                        paginate: {
-                            first: "Pertama",
-                            last: "Terakhir",
-                            next: "Berikutnya",
-                            previous: "Sebelumnya"
-                        },
-                        zeroRecords: "Tidak ada data yang cocok",
-                        infoEmpty: "Menampilkan 0 data",
-                        infoFiltered: "(difilter dari _MAX_ total data)"
-                    }
-                });
-
-                // Fitur pencarian manual
-                $('#searchInput').on('keyup', function() {
-                    table.search(this.value).draw();
-                });
+            document.addEventListener('DOMContentLoaded', function() {
+                const table = document.getElementById('kategoriTable');
+                const headers = table.querySelectorAll('th.sort');
+                const tbody = table.querySelector('tbody');
+                let currentSort = {
+                    column: null,
+                    order: 'asc'
+                };
 
                 // Konfirmasi hapus menggunakan SweetAlert2
                 document.querySelectorAll('.delete-btn').forEach(button => {
@@ -192,15 +136,59 @@
                     });
                 });
 
-                // Auto-hide alert setelah 3 detik
+                headers.forEach(header => {
+                    header.addEventListener('click', function() {
+                        const column = header.dataset.sort;
+                        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+                        const isAsc = currentSort.column === column && currentSort.order === 'asc';
+                        currentSort = {
+                            column,
+                            order: isAsc ? 'desc' : 'asc'
+                        };
+
+                        headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                        header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+
+                        rows.sort((a, b) => {
+                            const aText = a.querySelector(
+                                `td:nth-child(${header.cellIndex + 1})`).innerText.trim();
+                            const bText = b.querySelector(
+                                `td:nth-child(${header.cellIndex + 1})`).innerText.trim();
+
+                            return isAsc ?
+                                aText.localeCompare(bText, undefined, {
+                                    numeric: true
+                                }) :
+                                bText.localeCompare(aText, undefined, {
+                                    numeric: true
+                                });
+                        });
+
+                        rows.forEach(row => tbody.appendChild(row));
+                    });
+                });
+
+                // Search
+                const searchInput = document.getElementById('searchInput');
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = searchInput.value.toLowerCase();
+                    document.querySelectorAll('#kategoriTable tbody tr').forEach(row => {
+                        const match = row.textContent.toLowerCase().includes(searchTerm);
+                        row.style.display = match ? '' : 'none';
+                    });
+                });
+
+                // Alert fadeout
                 setTimeout(() => {
                     document.querySelectorAll('.alert').forEach(alert => {
-                        alert.style.transition = "opacity 0.5s ease-out";
-                        alert.style.opacity = "0";
+                        alert.style.transition = 'opacity 0.5s ease-out';
+                        alert.style.opacity = 0;
                         setTimeout(() => alert.remove(), 500);
                     });
                 }, 3000);
             });
         </script>
     @endpush
+
 </x-app-layout>

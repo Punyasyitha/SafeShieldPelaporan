@@ -21,20 +21,20 @@
             </div>
 
             <!-- Form Edit Kategori -->
-            <form id="editKategoriForm" action="{{ route('admin.master.kategori.update', encrypt($kategori->idkategori)) }}"
+            <form id="editKategoriForm" action="{{ route('admin.master.kategori.update', encrypt($ktg->IDKATEGORI)) }}"
                 method="POST">
                 @csrf
                 @method('PUT')
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">ID Kategori</label>
-                    <input type="text" name="idkategori" value="{{ $kategori->idkategori }}" readonly
+                    <input type="text" name="idkategori" value="{{ $ktg->IDKATEGORI }}" readonly
                         class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none">
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Nama Kategori</label>
-                    <input type="text" name="nama_kategori" value="{{ $kategori->nama_kategori }}"
+                    <input type="text" name="nama_kategori" value="{{ $ktg->NAMA_KATEGORI }}"
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-pink-200"
                         required>
                 </div>

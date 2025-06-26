@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -9,13 +10,35 @@ class StatusController extends Controller
 {
     public function index()
     {
-        $data = [
+        $response = Http::withHeaders([
+            'x-api-key' => env('API_KEY'),
+            'Accept'    => 'application/json',
+        ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+            'table' => 'mst_sts_pengaduan',
+            'data'  => '*',
+            'limit' => 100, // atau sesuai kebutuhan
+        ]);
+
+        if (!$response->successful()) {
+            return view('admin.master.status.list', [
+                'list' => collect(), // kosongkan list
+                'authorize' => (object)['add' => '1'],
+                'url' => url('admin/master/status'),
+                'error' => 'Gagal fetch data dari API',
+            ]);
+        }
+
+        $data = collect($response->json()['data'] ?? [])
+            ->map(fn($item) => (array) $item)
+            ->sortBy(fn($item) => (int) $item['IDSTATUS'] ?? 0) // urutkan berdasarkan IDstatus numerik
+            ->values(); // reset index array supaya $index + 1 di blade tetap konsisten
+
+        return view('admin.master.status.list', [
+            'list' => $data,
             'authorize' => (object)['add' => '1'],
             'url' => url('admin/master/status'),
-            'list' => DB::table('mst_sts_pengaduan')->orderBy('idstatus', 'asc')->paginate(10),
-        ];
-
-        return view('admin.master.status.list', $data);
+        ]);
+        //dd($data);
     }
 
     public function add()
@@ -34,23 +57,46 @@ class StatusController extends Controller
             'nama_status' => 'required|string|max:255',
         ]);
 
-        DB::beginTransaction();
         try {
-            $newId = DB::table('mst_sts_pengaduan')->max('idstatus') + 1;
+            // Generate ID sts_pengaduan terbaru (ambil dari API atau lokal DB)
+            $lastId = DB::table('mst_sts_pengaduan')->max('idstatus') ?? 0;
+            $newId = $lastId + 1;
 
-            DB::table('mst_sts_pengaduan')->insert([
-                'idstatus'    => $newId,
-                'nama_status' => $request->nama_status,
-            ]);
+            // Buat payload untuk dikirim ke API
+            $payload = [
+                'table' => 'mst_sts_pengaduan',
+                'data'  => [
+                    [
+                        'nama_status' => $request->nama_status,
+                    ]
+                ]
+            ];
 
-            DB::commit();
+            // Kirim POST request ke API eksternal
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/insert_up2k', $payload);
 
+            // Jika gagal
+            if (!$response->successful()) {
+                return redirect()->route('admin.master.status.list')
+                    ->with('error', 'Gagal menyimpan data ke API eksternal: ' . $response->body());
+            }
+
+            // Cek isi respons jika status gagal
+            $result = $response->json();
+            if (!empty($result['data'][0]['status']) && $result['data'][0]['status'] === 'gagal') {
+                return redirect()->route('admin.master.status.list')
+                    ->with('error', 'API Gagal: ' . ($result['data'][0]['deskripsi'] ?? ''));
+            }
+
+            // Jika berhasil
             return redirect()->route('admin.master.status.list')
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
-            DB::rollBack();
             return redirect()->route('admin.master.status.list')
-                ->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
@@ -58,16 +104,36 @@ class StatusController extends Controller
     {
         try {
             $idstatus = decrypt($id);
-            $status = DB::table('mst_sts_pengaduan')->where('idstatus', $idstatus)->first();
 
-            if (!$status) {
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+                'table'  => 'mst_sts_pengaduan',
+                'data'   => '*', // ambil semua kolom
+                'filter' => [
+                    'IDSTATUS' => $idstatus
+                ],
+                'limit' => 1 // hanya ambil 1 baris (karena IDstatus unik)
+            ]);
+
+            if (!$response->successful()) {
                 return redirect()->route('admin.master.status.list')
-                    ->with('error', 'Data tidak ditemukan.');
+                    ->with('error', 'Gagal mengambil data dari API.');
             }
 
+            $result = $response->json();
+
+            if (empty($result['data']) || count($result['data']) == 0) {
+                return redirect()->route('admin.master.status.list')
+                    ->with('error', 'Data tidak ditemukan di API.');
+            }
+
+            $sts = (object) $result['data'][0];
+
             return view('admin.master.status.show', [
-                'status' => $status,
-                'url' => 'admin/master/status'
+                'sts' => $sts,
+                'url' => 'admin/master/status',
             ]);
         } catch (\Exception $e) {
             return redirect()->route('admin.master.status.list')
@@ -79,13 +145,37 @@ class StatusController extends Controller
     {
         try {
             $idstatus = decrypt($id);
-            $status = DB::table('mst_sts_pengaduan')->where('idstatus', $idstatus)->first();
 
-            if (!$status) {
-                return redirect()->route('admin.master.status.list')->with('error', 'Data tidak ditemukan.');
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+                'table'  => 'mst_sts_pengaduan',
+                'data'   => '*',
+                'filter' => [
+                    'IDSTATUS' => $idstatus
+                ],
+                'limit' => 1
+            ]);
+
+            if (!$response->successful()) {
+                return redirect()->route('admin.master.status.list')
+                    ->with('error', 'Gagal mengambil data dari API.');
             }
 
-            return view('admin.master.status.edit', compact('status'));
+            $result = $response->json();
+
+            if (empty($result['data']) || count($result['data']) == 0) {
+                return redirect()->route('admin.master.status.list')
+                    ->with('error', 'Data tidak ditemukan di API.');
+            }
+
+            $sts = (object) $result['data'][0];
+
+            return view('admin.master.status.edit', [
+                'sts' => $sts,
+                'url' => 'admin/master/status',
+            ]);
         } catch (\Exception $e) {
             return redirect()->route('admin.master.status.list')
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -94,29 +184,51 @@ class StatusController extends Controller
 
     public function update(Request $request, $id)
     {
-        try {
-            $request->validate([
-                'nama_status' => 'required|string|max:255',
-            ]);
+        $request->validate([
+            'nama_status' => 'required|string|max:255',
+        ]);
 
+        try {
+            // Decrypt ID dari parameter
             $idstatus = decrypt($id);
 
-            $updated = DB::table('mst_sts_pengaduan')
-                ->where('idstatus', $idstatus)
-                ->update([
-                    'nama_status' => $request->nama_status,
-                ]);
+            // Buat payload untuk dikirim ke API
+            $payload = [
+                'table' => 'mst_sts_pengaduan',
+                'data'  => [
+                    'NAMA_STATUS' => $request->nama_status,
+                ],
+                'conditions' => [
+                    'IDSTATUS' => $idstatus
+                ],
+                'operators' => [""]
+            ];
 
-            if ($updated) {
+            // Kirim POST request ke API eksternal
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/update_up2k', $payload);
+
+            // Jika gagal koneksi API
+            if (!$response->successful()) {
                 return redirect()->route('admin.master.status.list')
-                    ->with('success', 'Status berhasil diperbarui.');
-            } else {
-                return redirect()->route('admin.master.status.list')
-                    ->with('error', 'Data tidak berubah.');
+                    ->with('error', 'Gagal mengupdate data ke API eksternal: ' . $response->body());
             }
+
+            // Cek isi respons jika status gagal
+            $result = $response->json();
+            if (!empty($result['data'][0]['status']) && $result['data'][0]['status'] === 'gagal') {
+                return redirect()->route('admin.master.status.list')
+                    ->with('error', 'API Gagal: ' . ($result['data'][0]['deskripsi'] ?? ''));
+            }
+
+            // Jika berhasil
+            return redirect()->route('admin.master.status.list')
+                ->with('success', 'Data berhasil diperbarui!');
         } catch (\Exception $e) {
             return redirect()->route('admin.master.status.list')
-                ->with('error', 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
@@ -125,16 +237,34 @@ class StatusController extends Controller
         try {
             $idstatus = decrypt($id);
         } catch (\Exception $e) {
-            abort(404, 'Data tidak ditemukan');
-        }
-        $status = DB::table('mst_sts_pengaduan')->where('idstatus', $idstatus)->first();
-        if (!$status) {
-            return redirect()->route('admin.master.status.list')
-                ->with('error', 'Data tidak ditemukan.');
+            abort(404, 'status tidak valid');
         }
 
         try {
-            DB::table('mst_sts_pengaduan')->where('idstatus', $idstatus)->delete();
+            // Kirim request DELETE ke API
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept' => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/delete_up2k', [
+                'table' => 'mst_sts_pengaduan',
+                'conditions' => [
+                    'IDSTATUS' => $idstatus
+                ],
+                'operators' => [""] // kosongkan karena hanya 1 kondisi
+            ]);
+
+            if (!$response->successful()) {
+                return redirect()->route('admin.master.status.list')
+                    ->with('error', 'Gagal menghapus data dari API eksternal: ' . $response->body());
+            }
+
+            $result = $response->json();
+
+            if (!empty($result['data'][0]['status']) && $result['data'][0]['status'] === 'gagal') {
+                return redirect()->route('admin.master.status.list')
+                    ->with('error', 'API Gagal: ' . ($result['data'][0]['deskripsi'] ?? ''));
+            }
+
             return redirect()->route('admin.master.status.list')
                 ->with('success', 'Data berhasil dihapus.');
         } catch (\Exception $e) {

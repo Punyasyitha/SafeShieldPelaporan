@@ -42,9 +42,9 @@ class FormPengaduanController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi data
-        //dd($request->all());
         $userid = Auth::id();
+
+        // Validasi manual di luar try-catch agar error validasi bisa otomatis kembali ke halaman form
         $request->validate([
             'nama_pengadu'     => 'required|string|max:100',
             'no_telepon'       => 'required|string|max:20',
@@ -55,6 +55,9 @@ class FormPengaduanController extends Controller
             'detail'           => 'required|string',
             'bukti'            => 'nullable|file|mimes:jpg,jpeg,png,pdf,mp4,mp3,wav|max:5120',
             'g-recaptcha-response' => 'required|captcha',
+        ], [
+            'bukti.mimes' => 'Bukti yang dilampirkan dapat berupa png, jpg, pdf, mp4, dan mp3',
+            'bukti.max' => 'Ukuran file bukti tidak boleh lebih dari 5MB.',
         ]);
 
         DB::beginTransaction();
@@ -66,15 +69,12 @@ class FormPengaduanController extends Controller
 
             $buktiPath = null;
 
-            // Simpan file bukti jika ada
             if ($request->hasFile('bukti')) {
                 $file = $request->file('bukti');
                 $filename = time() . '_' . $file->getClientOriginalName();
-
-                $buktiPath = $file->storeAs('bukti_pengaduan', $filename, 'public'); // Simpan ke storage/app/public/bukti_pengaduan
+                $buktiPath = $file->storeAs('bukti_pengaduan', $filename, 'public');
             }
 
-            // Simpan data ke database
             DB::table('pengaduan')->insert([
                 'idpengaduan'      => $newId,
                 'statusid'         => '1',
@@ -87,16 +87,16 @@ class FormPengaduanController extends Controller
                 'tanggal_kejadian' => $request->tanggal_kejadian,
                 'detail'           => $request->detail,
                 'bukti'            => $buktiPath,
-                'created_at' => now(),
-                'updated_at' => now(),
+                'created_at'       => now(),
+                'updated_at'       => now(),
             ]);
 
             DB::commit();
 
             return redirect()->route('user.pengaduan.add')->with('success', 'Data berhasil dikirim!');
         } catch (\Exception $e) {
-            DB::rollback();
-            return redirect()->route('user.pengaduan.add')->with('error', 'Gagal mengirimkan data: ' . $e->getMessage());
+            DB::rollBack();
+            return redirect()->route('user.pengaduan.add')->with('error', 'Gagal menyimpan data ke database: ' . $e->getMessage());
         }
     }
 

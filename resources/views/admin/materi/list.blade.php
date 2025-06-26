@@ -37,52 +37,6 @@
 
             <div class="overflow-x-auto">
                 <table id="materiTable" class="table-fixed border-gray-300 text-sm w-full">
-                    {{-- <thead>
-                        <tr class="bg-gray-100 text-sm leading-normal">
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">No</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">ID Materi</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">Nama Modul</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">Nama Kategori</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">Judul Materi</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span class="pl-1">Sumber</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                            <th class="py-3 px-6 text-left">
-                                <div class="flex justify-between items-center w-full">
-                                    <span>Aksi</span>
-                                    <i class="fas fa-sort ml-2"></i>
-                                </div>
-                            </th>
-                        </tr>
-                    </thead> --}}
                     <thead>
                         <tr class="bg-gray-100 text-sm leading-normal">
                             <th class="py-3 px-2 min-w-[50px] text-left truncate cursor-pointer sort" data-sort="no">
@@ -172,6 +126,10 @@
                     </tbody>
                 </table>
             </div>
+            <!-- Pagination -->
+            <div class="mt-4">
+                {{ $list->links() }}
+            </div>
         </div>
     </div>
 
@@ -192,30 +150,23 @@
 
     @push('scripts')
         <script>
+            // Searching
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('searchInput');
+                const tableRows = document.querySelectorAll('#materiTable tbody tr');
+
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = searchInput.value.toLowerCase();
+
+                    tableRows.forEach(row => {
+                        const rowText = row.textContent.toLowerCase();
+                        const match = rowText.includes(searchTerm);
+                        row.style.display = match ? '' : 'none';
+                    });
+                });
+            });
+
             $(document).ready(function() {
-                // Inisialisasi DataTable sekaligus menyimpan ke variabel `table`
-                var table = $('#materiTable').DataTable({
-                    responsive: true,
-                    language: {
-                        lengthMenu: "Tampilkan _MENU_ data",
-                        info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
-                        paginate: {
-                            first: "Pertama",
-                            last: "Terakhir",
-                            next: "Berikutnya",
-                            previous: "Sebelumnya"
-                        },
-                        zeroRecords: "Tidak ada data yang cocok",
-                        infoEmpty: "Menampilkan 0 data",
-                        infoFiltered: "(difilter dari _MAX_ total data)"
-                    }
-                });
-
-                // Fitur pencarian manual
-                $('#searchInput').on('keyup', function() {
-                    table.search(this.value).draw();
-                });
-
                 // Konfirmasi hapus menggunakan SweetAlert2
                 document.querySelectorAll('.delete-btn').forEach(button => {
                     button.addEventListener('click', function() {

@@ -76,22 +76,23 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($list as $art)
+                        @foreach ($list as $index => $art)
                             <tr class="border-b border-gray-300">
-                                <td class="py-3 px-6 truncate">{{ $loop->iteration }}</td>
-                                <td class="py-3 px-6 truncate">{{ $art->idartikel }}</td>
+                                <td class="py-3 px-6 truncate">{{ $index + 1 }}</td>
+                                <td class="py-3 px-6 truncate">{{ $art['IDARTIKEL'] ?? '-' }}</td>
                                 {{-- Menampilkan Nama Penulis atau ID-nya jika nama tidak ada --}}
                                 <td class="py-3 px-2 truncate">
-                                    {{ $art->nama_penulis ?? '-' }}
+                                    {{ $art['PENULISID'] ?? '-' }}
                                 </td>
-                                <td class="py-3 px-2 truncate">{{ $art->judul_artikel }}</td>
+                                <td class="py-3 px-2 truncate">{{ $art['JUDUL_ARTIKEL'] ?? '-' }}</td>
                                 <td class="py-3 px-2 truncate">
-                                    {{ Str::limit(strip_tags($art->isi_artikel), 100, '...') }}
+                                    {{ Str::limit(strip_tags($art['ISI_ARTIKEL'] ?? '-'), 100, '...') }}
                                 </td>
-                                <td class="py-3 px-2 truncate">{{ $art->tanggal_rilis }}</td>
+                                <td class="py-3 px-2 truncate">{{ $art['TANGGAL_RILIS'] ?? '-' }}</td>
                                 <td class="py-3 px-2 truncate">
-                                    @if ($art->gambar)
-                                        <img src="{{ Storage::url($art->gambar) }}" alt="Gambar Artikel" width="100">
+                                    @if ($art['GAMBAR'] ?? '-')
+                                        <img src="{{ Storage::url($art['GAMBAR'] ?? '-') }}" alt="Gambar Artikel"
+                                            width="100">
                                     @else
                                         <span class="text-muted">Tidak ada gambar</span>
                                     @endif
@@ -99,8 +100,8 @@
                                 <td class="py-3 px-2 truncate">
                                     <span
                                         class="px-2 py-1 rounded-lg text-white
-                                            {{ $art->status == 'draft' ? 'bg-red-500' : ($art->status == 'published' ? 'bg-green-500' : 'bg-orange-500') }}">
-                                        {{ ucfirst($art->status) }}
+                                            {{ ($art['STATUS'] ?? '-') == 'draft' ? 'bg-red-500' : (($art['STATUS'] ?? '-') == 'published' ? 'bg-green-500' : 'bg-orange-500') }}">
+                                        {{ ucfirst($art['STATUS'] ?? '-') }}
                                     </span>
                                 </td>
                                 <td class="py-3 px-2 flex flex-wrap gap-2">
@@ -108,7 +109,7 @@
                                     <button
                                         class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
                                         title="Lihat"
-                                        onclick="window.location='{{ route('admin.artikel.show', encrypt($art->idartikel)) }}'">
+                                        onclick="window.location='{{ route('admin.artikel.show', encrypt($art['IDARTIKEL'])) }}'">
                                         <i class="fas fa-eye"></i>
                                     </button>
 
@@ -116,18 +117,18 @@
                                     <button
                                         class="bg-green-500 hover:bg-green-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
                                         title="Edit"
-                                        onclick="window.location='{{ route('admin.artikel.edit', encrypt($art->idartikel)) }}'">
+                                        onclick="window.location='{{ route('admin.artikel.edit', encrypt($art['IDARTIKEL'])) }}'">
                                         <i class="fas fa-edit"></i>
                                     </button>
 
                                     {{-- Tombol Hapus --}}
-                                    <form action="{{ route('admin.artikel.delete', encrypt($art->idartikel)) }}"
+                                    <form action="{{ route('admin.artikel.delete', encrypt($art['IDARTIKEL'])) }}"
                                         method="POST" class="delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button"
                                             class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded delete-btn inline-flex items-center gap-2"
-                                            title="Hapus" data-id="{{ encrypt($art->idartikel) }}">
+                                            title="Hapus" data-id="{{ encrypt($art['IDARTIKEL']) }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -158,30 +159,23 @@
 
     @push('scripts')
         <script>
+            // Searching
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('searchInput');
+                const tableRows = document.querySelectorAll('#artikelTable tbody tr');
+
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = searchInput.value.toLowerCase();
+
+                    tableRows.forEach(row => {
+                        const rowText = row.textContent.toLowerCase();
+                        const match = rowText.includes(searchTerm);
+                        row.style.display = match ? '' : 'none';
+                    });
+                });
+            });
+
             $(document).ready(function() {
-                // Inisialisasi DataTable sekaligus menyimpan ke variabel `table`
-                var table = $('#artikelTable').DataTable({
-                    responsive: true,
-                    language: {
-                        lengthMenu: "Tampilkan _MENU_ data",
-                        info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
-                        paginate: {
-                            first: "Pertama",
-                            last: "Terakhir",
-                            next: "Berikutnya",
-                            previous: "Sebelumnya"
-                        },
-                        zeroRecords: "Tidak ada data yang cocok",
-                        infoEmpty: "Menampilkan 0 data",
-                        infoFiltered: "(difilter dari _MAX_ total data)"
-                    }
-                });
-
-                // Fitur pencarian manual
-                $('#searchInput').on('keyup', function() {
-                    table.search(this.value).draw();
-                });
-
                 // Konfirmasi hapus menggunakan SweetAlert2
                 document.querySelectorAll('.delete-btn').forEach(button => {
                     button.addEventListener('click', function() {

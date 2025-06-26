@@ -21,20 +21,20 @@
             </div>
 
             <!-- Form Edit Penulis -->
-            <form id="editPenulisForm" action="{{ route('admin.master.penulis.update', encrypt($penulis->idpenulis)) }}"
+            <form id="editPenulisForm" action="{{ route('admin.master.penulis.update', encrypt($pns->IDPENULIS)) }}"
                 method="POST">
                 @csrf
                 @method('PUT')
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">ID Penulis</label>
-                    <input type="text" name="idpenulis" value="{{ $penulis->idpenulis }}" readonly
+                    <input type="text" name="idpenulis" value="{{ $pns->IDPENULIS }}" readonly
                         class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none">
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Nama Penulis</label>
-                    <input type="text" name="nama_penulis" value="{{ $penulis->nama_penulis }}"
+                    <input type="text" name="nama_penulis" value="{{ $pns->NAMA_PENULIS }}"
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-purple-200"
                         required>
                 </div>

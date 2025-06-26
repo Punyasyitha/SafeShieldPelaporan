@@ -13,23 +13,23 @@
                     </button>
 
                     <button type="button"
-                        onclick="window.location='{{ url($url . '/edit/' . encrypt($penulis->idpenulis)) }}'"
+                        onclick="window.location='{{ url($url . '/edit/' . encrypt($pns->IDPENULIS)) }}'"
                         class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg">
                         <i class="fas fa-pen-to-square me-1"></i><span class="font-weight-bold">Edit</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Tampilan ID Penulis dan Nama Penulis -->
+            <!-- Tampilan ID pns dan Nama pns -->
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">ID Penulis</label>
-                <input type="text" name="idpenulis" value="{{ $penulis->idpenulis }}" readonly
+                <input type="text" name="IDPENULIS" value="{{ $pns->IDPENULIS }}" readonly
                     class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none">
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Nama Penulis</label>
-                <input type="text" name="nama_penulis" value="{{ $penulis->nama_penulis }}" readonly
+                <input type="text" name="NAMA_PENULIS" value="{{ $pns->NAMA_PENULIS }}" readonly
                     class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none">
             </div>
         </div>

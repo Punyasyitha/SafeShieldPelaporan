@@ -22,7 +22,8 @@ class HomeController extends BaseController
     public function index()
     {
         // Data statistik jumlah
-        $statusBaru = Pengaduan::whereMonth('tanggal_kejadian', Carbon::now()->month)->count();
+        $pengaduanBaru = Pengaduan::whereMonth('tanggal_kejadian', Carbon::now()->month)->count();
+        $statusBaru = MstModul::whereMonth('created_at', Carbon::now()->month)->count();
         $modulBaru = MstModul::whereMonth('created_at', Carbon::now()->month)->count();
         $kategoriBaru = MstKategori::whereMonth('created_at', Carbon::now()->month)->count();
         $penulisBaru = MstPenulis::whereMonth('created_at', Carbon::now()->month)->count();
@@ -60,6 +61,7 @@ class HomeController extends BaseController
         $progresSelesai = $totalBulanIni > 0 ? round(($selesaiBulanIni / $totalBulanIni) * 100, 2) : 0;
 
         return view('admin.dashboard', [
+            'pengaduanBaru' => $pengaduanBaru,
             'statusBaru' => $statusBaru,
             'modulBaru' => $modulBaru,
             'kategoriBaru' => $kategoriBaru,

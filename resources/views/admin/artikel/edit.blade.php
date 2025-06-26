@@ -20,14 +20,14 @@
             </div>
 
             <!-- Form Edit Artikel -->
-            <form id="editArtikelform" action="{{ route('admin.artikel.update', encrypt($artikel->idartikel)) }}"
+            <form id="editArtikelform" action="{{ route('admin.artikel.update', encrypt($art->IDARTIKEL)) }}"
                 method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">ID Artikel</label>
-                    <input type="text" name="idartikel" value="{{ old('idartikel', $artikel->idartikel) }}" readonly
+                    <input type="text" name="idartikel" value="{{ old('idartikel', $art->IDARTIKEL) }}" readonly
                         class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none">
                 </div>
 
@@ -35,10 +35,10 @@
                     <label class="block text-sm font-medium text-gray-700">Nama Penulis</label>
                     <select name="penulisid" required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
-                        @foreach ($penulis as $pns)
-                            <option value="{{ $pns->idpenulis }}"
-                                {{ $pns->idpenulis == $artikel->penulisid ? 'selected' : '' }}>
-                                {{ $pns->nama_penulis }}
+                        @foreach ($penulis as $index => $pns)
+                            <option value="{{ $pns->IDPENULIS }}"
+                                {{ $pns->IDPENULIS == $art->PENULISID ? 'selected' : '' }}>
+                                {{ $pns->NAMA_PENULIS }}
                             </option>
                         @endforeach
                     </select>
@@ -46,33 +46,34 @@
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Judul Artikel</label>
-                    <input type="text" name="judul_artikel"
-                        value="{{ old('judul_artikel', $artikel->judul_artikel) }}" required
+                    <input type="text" name="judul_artikel" value="{{ old('judul_artikel', $art->JUDUL_ARTIKEL) }}"
+                        required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Isi Artikel</label>
                     <textarea name="isi_artikel" required rows="4"
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 resize-none">{{ old('isi_artikel', $artikel->isi_artikel) }}</textarea>
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 resize-none">{{ old('isi_artikel', $art->ISI_ARTIKEL) }}</textarea>
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Tanggal Rilis</label>
                     <input type="date" name="tanggal_rilis"
-                        value="{{ old('tanggal_rilis', $artikel->tanggal_rilis) }}" required
+                        value="{{ \Carbon\Carbon::createFromFormat('d-M-y', $art->TANGGAL_RILIS)->format('Y-m-d') }}"
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                 </div>
 
                 <!-- Upload Gambar Artikel -->
                 <div class="mb-4">
                     <label for="gambar" class="block font-medium">Gambar</label>
+                    <input type="hidden" name="old_gambar" value="{{ $art->GAMBAR }}">
                     <input type="file" name="gambar" id="gambar" accept="image/*"
                         class="w-full border p-2 rounded">
 
-                    @if ($artikel->gambar)
+                    @if ($art->GAMBAR)
                         <p class="mt-2">Gambar saat ini:</p>
-                        <img src="{{ asset('storage/' . $artikel->gambar) }}" alt="Gambar Artikel"
+                        <img src="{{ asset('storage/' . $art->GAMBAR) }}" alt="Gambar Artikel"
                             class="w-32 h-32 object-cover mt-2">
 
                         <!-- Checkbox untuk menghapus gambar -->
@@ -88,10 +89,10 @@
                     <select name="status" id="statusSelect" required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2"
                         onchange="updateBorder()">
-                        <option value="draft" {{ $artikel->status == 'draft' ? 'selected' : '' }}>Draft</option>
-                        <option value="published" {{ $artikel->status == 'published' ? 'selected' : '' }}>Published
+                        <option value="draft" {{ $art->STATUS == 'draft' ? 'selected' : '' }}>Draft</option>
+                        <option value="published" {{ $art->STATUS == 'published' ? 'selected' : '' }}>Published
                         </option>
-                        <option value="archived" {{ $artikel->status == 'archived' ? 'selected' : '' }}>Archived
+                        <option value="archived" {{ $art->STATUS == 'archived' ? 'selected' : '' }}>Archived
                         </option>
                     </select>
                 </div>

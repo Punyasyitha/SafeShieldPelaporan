@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -9,13 +10,35 @@ class PenulisController extends Controller
 {
     public function index()
     {
-        $data = [
+        $response = Http::withHeaders([
+            'x-api-key' => env('API_KEY'),
+            'Accept'    => 'application/json',
+        ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+            'table' => 'mst_penulis',
+            'data'  => '*',
+            'limit' => 100, // atau sesuai kebutuhan
+        ]);
+
+        if (!$response->successful()) {
+            return view('admin.master.penulis.list', [
+                'list' => collect(), // kosongkan list
+                'authorize' => (object)['add' => '1'],
+                'url' => url('admin/master/penulis'),
+                'error' => 'Gagal fetch data dari API',
+            ]);
+        }
+
+        $data = collect($response->json()['data'] ?? [])
+            ->map(fn($item) => (array) $item)
+            ->sortBy(fn($item) => (int) $item['IDPENULIS'] ?? 0) // urutkan berdasarkan IDpenulis numerik
+            ->values(); // reset index array supaya $index + 1 di blade tetap konsisten
+
+        return view('admin.master.penulis.list', [
+            'list' => $data,
             'authorize' => (object)['add' => '1'],
             'url' => url('admin/master/penulis'),
-            'list' => DB::table('mst_penulis')->orderBy('idpenulis', 'asc')->paginate(10),
-        ];
-
-        return view('admin.master.penulis.list', $data);
+        ]);
+        //dd($data);
     }
 
     public function add()
@@ -33,26 +56,48 @@ class PenulisController extends Controller
             'nama_penulis' => 'required|string|max:100',
         ]);
 
-        DB::beginTransaction();
         try {
-            $newId = DB::table('mst_penulis')->max('idpenulis') + 1;
+            // Generate ID penulis terbaru (ambil dari API atau lokal DB)
+            $lastId = DB::table('mst_penulis')->max('idpenulis') ?? 0;
+            $newId = $lastId + 1;
 
-            DB::table('mst_penulis')->insert([
-                'idpenulis'    => $newId,
-                'nama_penulis' => $request->nama_penulis,
-                'created_at'   => now(),
-                'updated_at'   => now(),
-            ]);
+            // Buat payload untuk dikirim ke API
+            $payload = [
+                'table' => 'mst_penulis',
+                'data'  => [
+                    [
+                        'nama_penulis' => $request->nama_penulis,
+                        'created_at'    => now()->format('d-M-y h.i.s A'), // contoh format Oracle
+                        'updated_at'    => now()->format('d-M-y h.i.s A'),
+                    ]
+                ]
+            ];
 
-            DB::commit();
+            // Kirim POST request ke API eksternal
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/insert_up2k', $payload);
 
+            // Jika gagal
+            if (!$response->successful()) {
+                return redirect()->route('admin.master.penulis.list')
+                    ->with('error', 'Gagal menyimpan data ke API eksternal: ' . $response->body());
+            }
+
+            // Cek isi respons jika status gagal
+            $result = $response->json();
+            if (!empty($result['data'][0]['status']) && $result['data'][0]['status'] === 'gagal') {
+                return redirect()->route('admin.master.penulis.list')
+                    ->with('error', 'API Gagal: ' . ($result['data'][0]['deskripsi'] ?? ''));
+            }
+
+            // Jika berhasil
             return redirect()->route('admin.master.penulis.list')
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
-            DB::rollBack();
-
             return redirect()->route('admin.master.penulis.list')
-                ->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
@@ -60,16 +105,37 @@ class PenulisController extends Controller
     {
         try {
             $idpenulis = decrypt($id);
-            $penulis = DB::table('mst_penulis')->where('idpenulis', $idpenulis)->first();
+            // dd(['idpenulis' => decrypt($id)]);
+            // Request ke API dengan filter berdasarkan IDpenulis
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+                'table'  => 'mst_penulis',
+                'data'   => '*', // ambil semua kolom
+                'filter' => [
+                    'IDPENULIS' => $idpenulis
+                ],
+                'limit' => 1 // hanya ambil 1 baris (karena IDpenulis unik)
+            ]);
 
-            if (!$penulis) {
+            if (!$response->successful()) {
                 return redirect()->route('admin.master.penulis.list')
-                    ->with('error', 'Data tidak ditemukan.');
+                    ->with('error', 'Gagal mengambil data dari API.');
             }
 
+            $result = $response->json();
+
+            if (empty($result['data']) || count($result['data']) == 0) {
+                return redirect()->route('admin.master.penulis.list')
+                    ->with('error', 'Data tidak ditemukan di API.');
+            }
+
+            $pns = (object) $result['data'][0];
+
             return view('admin.master.penulis.show', [
-                'penulis' => $penulis,
-                'url' => 'admin/master/penulis'
+                'pns' => $pns,
+                'url' => 'admin/master/penulis',
             ]);
         } catch (\Exception $e) {
             return redirect()->route('admin.master.penulis.list')
@@ -81,13 +147,36 @@ class PenulisController extends Controller
     {
         try {
             $idpenulis = decrypt($id);
-            $penulis = DB::table('mst_penulis')->where('idpenulis', $idpenulis)->first();
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+                'table'  => 'mst_penulis',
+                'data'   => '*',
+                'filter' => [
+                    'IDPENULIS' => $idpenulis
+                ],
+                'limit' => 1
+            ]);
 
-            if (!$penulis) {
-                return redirect()->route('admin.master.penulis.list')->with('error', 'Data tidak ditemukan.');
+            if (!$response->successful()) {
+                return redirect()->route('admin.master.penulis.list')
+                    ->with('error', 'Gagal mengambil data dari API.');
             }
 
-            return view('admin.master.penulis.edit', compact('penulis'));
+            $result = $response->json();
+
+            if (empty($result['data']) || count($result['data']) == 0) {
+                return redirect()->route('admin.master.penulis.list')
+                    ->with('error', 'Data tidak ditemukan di API.');
+            }
+
+            $pns = (object) $result['data'][0];
+
+            return view('admin.master.penulis.edit', [
+                'pns' => $pns,
+                'url' => 'admin/master/penulis',
+            ]);
         } catch (\Exception $e) {
             return redirect()->route('admin.master.penulis.list')
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
@@ -96,30 +185,49 @@ class PenulisController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'nama_penulis' => 'required|string|max:100',
+        ]);
         try {
-            $request->validate([
-                'nama_penulis' => 'required|string|max:100',
-            ]);
-
+            // Decrypt ID dari parameter
             $idpenulis = decrypt($id);
 
-            $updated = DB::table('mst_penulis')
-                ->where('idpenulis', $idpenulis)
-                ->update([
-                    'nama_penulis' => $request->nama_penulis,
-                    'updated_at'   => now(),
-                ]);
+            // Payload untuk API update
+            $payload = [
+                'table' => 'mst_penulis',
+                'data' => [
+                    'NAMA_PENULIS' => $request->nama_penulis,
+                    'UPDATED_AT' => now()->format('d-M-y h.i.s A'), // format waktu ke Oracle
+                ],
+                'conditions' => [
+                    'IDPENULIS' => $idpenulis
+                ],
+                'operators' => [""] // hanya 1 kondisi, jadi operator dikosongkan
+            ];
 
-            if ($updated) {
+            // Kirim ke API
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/update_up2k', $payload);
+
+            if (!$response->successful()) {
                 return redirect()->route('admin.master.penulis.list')
-                    ->with('success', 'Penulis berhasil diperbarui.');
-            } else {
-                return redirect()->route('admin.master.penulis.list')
-                    ->with('error', 'Data tidak berubah.');
+                    ->with('error', 'Gagal mengupdate data ke API eksternal: ' . $response->body());
             }
-        } catch (\Exception $e) {
+
+            $result = $response->json();
+            if (!empty($result['data'][0]['status']) && $result['data'][0]['status'] === 'gagal') {
+                return redirect()->route('admin.master.penulis.list')
+                    ->with('error', 'API Gagal: ' . ($result['data'][0]['deskripsi'] ?? ''));
+            }
+
             return redirect()->route('admin.master.penulis.list')
-                ->with('error', 'Terjadi kesalahan saat memperbarui data: ' . $e->getMessage());
+                ->with('success', 'Data berhasil diupdate!');
+        } catch (\Exception $e) {
+
+            return redirect()->route('admin.master.penulis.list')
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
@@ -127,38 +235,39 @@ class PenulisController extends Controller
     {
         try {
             $idpenulis = decrypt($id);
-            $penulis = DB::table('mst_penulis')->where('idpenulis', $idpenulis)->first();
-            if (!$penulis) {
+        } catch (\Exception $e) {
+            abort(404, 'Data tidak valid');
+        }
+
+        try {
+            // Kirim request DELETE ke API
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept' => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/delete_up2k', [
+                'table' => 'mst_penulis',
+                'conditions' => [
+                    'IDPENULIS' => $idpenulis
+                ],
+                'operators' => [""] // kosongkan karena hanya 1 kondisi
+            ]);
+
+            if (!$response->successful()) {
                 return redirect()->route('admin.master.penulis.list')
-                    ->with('error', 'Data tidak ditemukan.');
+                    ->with('error', 'Gagal menghapus data dari API eksternal: ' . $response->body());
             }
 
-            DB::table('mst_penulis')->where('idpenulis', $idpenulis)->delete();
+            $result = $response->json();
 
-            return redirect()->route('admin.master.penulis.list')
-                ->with('success', 'Penulis berhasil dihapus.');
-        } catch (\Exception $e) {
-            return redirect()->route('admin.master.penulis.list')
-                ->with('error', 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage());
-        }
-        try {
-            $idpenulis = decrypt($id);
-        } catch (\Exception $e) {
-            abort(404, 'Data tidak ditemukan');
-        }
+            if (!empty($result['data'][0]['status']) && $result['data'][0]['status'] === 'gagal') {
+                return redirect()->route('admin.master.penulis.list')
+                    ->with('error', 'API Gagal: ' . ($result['data'][0]['deskripsi'] ?? ''));
+            }
 
-        $penulis = DB::table('mst_penulis')->where('idpenulis', $idpenulis)->first();
-        if (!$penulis) {
-            return redirect()->route('admin.master.penulis.list')
-                ->with('error', 'Data tidak ditemukan.');
-        }
-
-        try {
-            DB::table('mst_penulis')->where('idpenulis', $idpenulis)->delete();
             return redirect()->route('admin.master.penulis.list')
                 ->with('success', 'Data berhasil dihapus.');
         } catch (\Exception $e) {
-            return redirect()->route('admin.penulis.list')
+            return redirect()->route('admin.master.penulis.list')
                 ->with('error', 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage());
         }
     }

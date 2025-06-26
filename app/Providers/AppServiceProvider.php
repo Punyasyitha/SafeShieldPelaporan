@@ -90,6 +90,11 @@ class AppServiceProvider extends ServiceProvider
                             ],
                         ],
                     ],
+                    [
+                        'title' => 'API',
+                        'icon'  => 'fas fa-clipboard',
+                        'route' => 'admin.pages.result',
+                    ],
                 ];
             } elseif ($user && $user->role === 'user') {
                 // Menu untuk USER

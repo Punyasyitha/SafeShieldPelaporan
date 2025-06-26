@@ -21,32 +21,34 @@
             </div>
 
             <!-- Form Edit Modul -->
-            <form id="editModulForm" action="{{ route('admin.master.modul.update', encrypt($modul->idmodul)) }}"
+            <form id="editModulForm" action="{{ route('admin.master.modul.update', encrypt($mod->IDMODUL)) }}"
                 method="POST">
                 @csrf
                 @method('PUT')
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">ID Modul</label>
-                    <input type="text" name="idmodul" value="{{ $modul->idmodul }}" readonly
+                    <input type="text" name="idmodul" value="{{ $mod->IDMODUL }}" readonly
                         class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none">
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Nama Modul</label>
-                    <input type="text" name="nama_modul" value="{{ $modul->nama_modul }}" required
+                    <input type="text" name="nama_modul" value="{{ $mod->NAMA_MODUL }}" required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Deskripsi</label>
                     <textarea name="deskripsi" rows="4" required
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 resize-none">{{ $modul->deskripsi }}</textarea>
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 resize-none">{{ $mod->DESKRIPSI }}</textarea>
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Tahun Terbit</label>
-                    <input type="date" name="tahun_terbit" value="{{ $modul->tahun_terbit }}" required
+                    <input type="date" name="tahun_terbit"
+                        value="{{ $mod->TAHUN_TERBIT = \Carbon\Carbon::createFromFormat('d-M-y', $mod->TAHUN_TERBIT)->format('Y-m-d') }}"
+                        required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                 </div>
             </form>

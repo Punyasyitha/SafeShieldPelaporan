@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -9,61 +10,111 @@ class SubMateriController extends Controller
 {
     public function index()
     {
-        $data = [
+        $response = Http::withHeaders([
+            'x-api-key' => env('API_KEY'),
+            'Accept'    => 'application/json',
+        ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+            'table' => 'submateri',
+            'data'  => '*',
+            'limit' => 100, // atau sesuai kebutuhan
+        ]);
+
+        if (!$response->successful()) {
+            return view('admin.submateri.list', [
+                'list' => collect(), // kosongkan list
+                'authorize' => (object)['add' => '1'],
+                'url' => url('admin/master/submateri'),
+                'error' => 'Gagal fetch data dari API',
+            ]);
+        }
+
+        $data = collect($response->json()['data'] ?? [])
+            ->map(fn($item) => (array) $item)
+            ->sortBy(fn($item) => (int) $item['IDSUBMATERI'] ?? 0) // urutkan berdasarkan numerik
+            ->values(); // reset index array supaya $index + 1 di blade tetap konsisten
+
+        return view('admin.submateri.list', [
+            'list' => $data,
             'authorize' => (object)['add' => '1'],
-            'url' => url('admin/submateri'),
-            'list' => DB::table('submateri')
-                ->join('materi', 'submateri.materiid', '=', 'materi.idmateri')
-                ->select('submateri.*', 'materi.judul_materi')
-                ->orderBy('submateri.idsubmateri', 'asc')
-                ->paginate(10),
-        ];
-
-        // dd($data['list']);
-
-        return view('admin.submateri.list', $data);
+            'url' => url('admin/master/submateri'),
+        ]);
+        //dd($data);
     }
 
     public function add()
     {
         $authorize = (object)['add' => '1'];
-        $materi = DB::table('materi')->get();
+
+        // Ambil data materi dari API
+        $response = Http::withHeaders([
+            'x-api-key' => env('API_KEY'),
+            'Accept'    => 'application/json',
+        ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+            'table' => 'materi',
+            'data'  => '*',
+            'limit' => 100,
+        ]);
+
+        // Cek apakah response berhasil
+        if (!$response->successful()) {
+            return back()->with('error', 'Gagal mengambil data materi');
+        }
+
+        $result = $response->json();
+        $materi = collect($result['data'] ?? []); // handle jika data kosong
 
         return view('admin.submateri.add', [
             'authorize' => $authorize,
-            'url' => 'admin/submateri',
-            'materi' => $materi,
+            'url'       => 'admin/submateri',
+            'materi'   => $materi,
         ]);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'idsubmateri'      => 'nullable',
             'materiid'      => 'required|exists:materi,idmateri',
             'judul_submateri'  => 'required|string|max:255',
             'isi'              => 'required|string',
         ]);
 
-        DB::beginTransaction();
         try {
-            $newId = DB::table('submateri')->max('idsubmateri') + 1;
+            $lastId = DB::table('submateri')->max('idsubmateri') ?? 0;
+            $newId = $lastId + 1;
 
-            DB::table('submateri')->insert([
-                'idsubmateri'     => $newId,
-                'materiid'     => $request->materiid,
-                'judul_submateri' => $request->judul_submateri,
-                'isi' => $request->isi,
-                'created_at'    => now(),
-                'updated_at'    => now(),
-            ]);
+            $payload = [
+                'table' => 'submateri',
+                'data'  => [
+                    [
+                        'materiid'        => $request->materiid,
+                        'judul_submateri' => $request->judul_submateri,
+                        'isi'             => $request->isi,
+                        'created_at'      => now()->format('d-M-y h.i.s A'), // contoh format Oracle
+                        'updated_at'      => now()->format('d-M-y h.i.s A'),
+                    ]
+                ]
+            ];
 
-            DB::commit();
+            // Kirim ke API eksternal
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/insert_up2k', $payload);
+
+            if (!$response->successful()) {
+                return redirect()->route('admin.submateri.list')
+                    ->with('error', 'Gagal menyimpan data ke API eksternal: ' . $response->body());
+            }
+
+            $result = $response->json();
+            if (!empty($result['data'][0]['status']) && $result['data'][0]['status'] === 'gagal') {
+                return redirect()->route('admin.submateri.list')
+                    ->with('error', 'API Gagal: ' . ($result['data'][0]['deskripsi'] ?? ''));
+            }
 
             return redirect()->route('admin.submateri.list')
                 ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
-            DB::rollBack();
             return redirect()->route('admin.submateri.list')
                 ->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }

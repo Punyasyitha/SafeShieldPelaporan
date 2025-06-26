@@ -25,11 +25,26 @@
             </div>
         @endif
 
-        @if (session('error'))
-            <div class="alert bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-                role="alert">
-                <strong class="font-bold">Gagal! </strong>
-                <span class="block sm:inline">{{ session('error') }}</span>
+        @if ($errors->any())
+            <!-- Modal Background -->
+            <div id="validationErrorModal"
+                class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <!-- Modal Box -->
+                <div class="bg-white rounded-lg p-6 shadow-lg max-w-sm w-full relative">
+                    <button onclick="document.getElementById('validationErrorModal').remove()"
+                        class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 text-2xl mt-1"></i>
+                        <div>
+                            <p class="font-bold text-yellow-700">Validasi Gagal!</p>
+                            <ul class="text-gray-700 text-sm list-disc pl-5 space-y-1 mt-1">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         @endif
 
@@ -144,6 +159,7 @@
         }, 3000);
 
         public
+
         function rules() {
             return [
                 ...

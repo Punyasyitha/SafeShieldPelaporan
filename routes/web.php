@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\ArtikelController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\FormPengaduanController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\KategoriController;
@@ -23,6 +25,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/register', [RegisteredUserController::class, 'create'])
+    ->middleware('guest')
+    ->name('register');
+
+Route::post('/register', [RegisteredUserController::class, 'store'])
+    ->middleware('guest');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -37,7 +46,7 @@ require __DIR__ . '/auth.php';
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('admin.dashboard');
-
+    Route::match(['get', 'post'], '/api-fetch', [ApiController::class, 'fetchData'])->name('admin.pages.result');
     // Grup Master dalam Admin
     Route::prefix('master')->name('admin.master.')->group(function () {
         Route::prefix('status')->name('status.')->group(function () {

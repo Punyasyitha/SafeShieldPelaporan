@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -10,29 +11,63 @@ class ArtikelController extends Controller
 {
     public function index()
     {
-        $data = [
-            'authorize' => (object)['add' => '1'],
-            'url' => url('admin/artikel'),
-            'list' => DB::table('artikel')
-                ->join('mst_penulis', 'artikel.penulisid', '=', 'mst_penulis.idpenulis')
-                ->select('artikel.*', 'mst_penulis.nama_penulis')
-                ->orderBy('artikel.idartikel', 'asc')
-                ->paginate(10),
-        ];
-        // dd($data['list']);
+        $response = Http::withHeaders([
+            'x-api-key' => env('API_KEY'),
+            'Accept'    => 'application/json',
+        ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+            'table' => 'artikel',
+            'data'  => '*',
+            'limit' => 100, // atau sesuai kebutuhan
+        ]);
 
-        return view('admin.artikel.list', $data);
+        if (!$response->successful()) {
+            return view('admin.artikel.list', [
+                'list' => collect(), // kosongkan list
+                'authorize' => (object)['add' => '1'],
+                'url' => url('admin/master/artikel'),
+                'error' => 'Gagal fetch data dari API',
+            ]);
+        }
+
+        $data = collect($response->json()['data'] ?? [])
+            ->map(fn($item) => (array) $item)
+            ->sortBy(fn($item) => (int) $item['IDARTIKEL'] ?? 0) // urutkan berdasarkan numerik
+            ->values(); // reset index array supaya $index + 1 di blade tetap konsisten
+
+        return view('admin.artikel.list', [
+            'list' => $data,
+            'authorize' => (object)['add' => '1'],
+            'url' => url('admin/master/artikel'),
+        ]);
+        //dd($data);
     }
 
     public function add()
     {
         $authorize = (object)['add' => '1'];
-        $penulis = DB::table('mst_penulis')->get();
+
+        // Ambil data penulis dari API
+        $response = Http::withHeaders([
+            'x-api-key' => env('API_KEY'),
+            'Accept'    => 'application/json',
+        ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+            'table' => 'mst_penulis',
+            'data'  => '*',
+            'limit' => 100,
+        ]);
+
+        // Cek apakah response berhasil
+        if (!$response->successful()) {
+            return back()->with('error', 'Gagal mengambil data penulis');
+        }
+
+        $result = $response->json();
+        $penulis = collect($result['data'] ?? []); // handle jika data kosong
 
         return view('admin.artikel.add', [
             'authorize' => $authorize,
-            'url' => 'admin/artikel',
-            'penulis' => $penulis,
+            'url'       => 'admin/artikel',
+            'penulis'   => $penulis,
         ]);
     }
 
@@ -47,34 +82,58 @@ class ArtikelController extends Controller
             'gambar'         => 'nullable|image|mimes:jpg,jpeg,png,gif,bmp,svg,webp|max:102400', // 100MB
         ]);
 
-        DB::beginTransaction();
         try {
-            $newId = DB::table('artikel')->max('idartikel') + 1;
             $gambarPath = null;
 
+            // Upload file gambar jika ada
             if ($request->hasFile('gambar')) {
                 $gambar = $request->file('gambar');
                 $filename = time() . '-' . $gambar->getClientOriginalName();
                 $gambarPath = Storage::disk('public')->putFileAs('artikel', $gambar, $filename);
             }
 
-            DB::table('artikel')->insert([
-                'idartikel'     => $newId,
-                'penulisid'     => $request->penulisid,
-                'judul_artikel' => $request->judul_artikel,
-                'isi_artikel'   => $request->isi_artikel,
-                'tanggal_rilis' => $request->tanggal_rilis,
-                'status'        => $request->status,
-                'gambar'        => $gambarPath,
-                'created_at'    => now(),
-                'updated_at'    => now(),
-            ]);
+            // Format payload untuk API
+            $payload = [
+                'table' => 'artikel',
+                'data' => [
+                    [
+                        'penulisid'     => $request->penulisid,
+                        'judul_artikel' => $request->judul_artikel,
+                        'isi_artikel'   => $request->isi_artikel,
+                        'tanggal_rilis' => [
+                            'type' => 'date',
+                            'value' => \Carbon\Carbon::createFromFormat('Y-m-d', $request->tanggal_rilis)->format('d-m-Y')
+                        ],
+                        'gambar'        => $gambarPath,
+                        'status'        => $request->status,
+                        'created_at'    => now()->format('d-M-y h.i.s A'),
+                        'updated_at'    => now()->format('d-M-y h.i.s A'),
+                    ]
+                ]
+            ];
 
-            DB::commit();
-            return redirect()->route('admin.artikel.list')->with('success', 'Data berhasil disimpan!');
+            // Kirim ke API eksternal
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/insert_up2k', $payload);
+
+            if (!$response->successful()) {
+                return redirect()->route('admin.artikel.list')
+                    ->with('error', 'Gagal menyimpan data ke API eksternal: ' . $response->body());
+            }
+
+            $result = $response->json();
+            if (!empty($result['data'][0]['status']) && $result['data'][0]['status'] === 'gagal') {
+                return redirect()->route('admin.artikel.list')
+                    ->with('error', 'API Gagal: ' . ($result['data'][0]['deskripsi'] ?? ''));
+            }
+
+            return redirect()->route('admin.artikel.list')
+                ->with('success', 'Data berhasil disimpan!');
         } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->route('admin.artikel.list')->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
+            return redirect()->route('admin.artikel.list')
+                ->with('error', 'Gagal menyimpan data: ' . $e->getMessage());
         }
     }
 
@@ -82,118 +141,175 @@ class ArtikelController extends Controller
     {
         try {
             $idartikel = decrypt($id);
+            // dd(['idartikel' => decrypt($id)]);
+
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+                'table'  => 'artikel',
+                'data'   => '*', // ambil semua kolom
+                'filter' => [
+                    'IDARTIKEL' => $idartikel
+                ],
+                'limit' => 1 // hanya ambil 1 baris (karena idartikel unik)
+            ]);
+
+            if (!$response->successful()) {
+                return redirect()->route('admin.artikel.list')
+                    ->with('error', 'Gagal mengambil data dari API.');
+            }
+
+            $result = $response->json();
+
+            if (empty($result['data']) || count($result['data']) == 0) {
+                return redirect()->route('admin.artikel.list')
+                    ->with('error', 'Data tidak ditemukan di API.');
+            }
+
+            $art = (object) $result['data'][0];
+
+            return view('admin.artikel.show', [
+                'art' => $art,
+                'url' => 'admin/master/artikel',
+            ]);
         } catch (\Exception $e) {
-            abort(404, 'Artikel tidak ditemukan');
+            return redirect()->route('admin.artikel.list')
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        $artikel = DB::table('artikel')
-            ->join('mst_penulis', 'artikel.penulisid', '=', 'mst_penulis.idpenulis')
-            ->select('artikel.*', 'mst_penulis.nama_penulis')
-            ->where('artikel.idartikel', $idartikel)
-            ->first();
-
-        if (!$artikel) {
-            abort(404, 'Artikel tidak ditemukan');
-        }
-
-        return view('admin.artikel.show', compact('artikel'));
     }
 
     public function edit($id)
     {
         try {
             $idartikel = decrypt($id);
+
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+                'table'  => 'artikel',
+                'data'   => '*',
+                'filter' => [
+                    'IDARTIKEL' => $idartikel
+                ],
+                'limit' => 1
+            ]);
+
+            if (!$response->successful()) {
+                return redirect()->route('admin.artikel.list')
+                    ->with('error', 'Gagal mengambil data dari API.');
+            }
+
+            $result = $response->json();
+
+            if (empty($result['data']) || count($result['data']) == 0) {
+                return redirect()->route('admin.artikel.list')
+                    ->with('error', 'Data tidak ditemukan di API.');
+            }
+
+            $art = (object) $result['data'][0];
+
+            // Ambil data penulis
+            $responsePenulis = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+                'table' => 'mst_penulis',
+                'data'  => '*',
+                'limit' => 100,
+            ]);
+
+            $penulis = collect($responsePenulis['data'] ?? [])->map(function ($item) {
+                return (object) $item;
+            });
+
+            return view('admin.artikel.edit', [
+                'art'     => $art,
+                'penulis' => $penulis,
+            ]);
         } catch (\Exception $e) {
-            abort(404, 'Artikel tidak ditemukan');
+            return redirect()->route('admin.artikel.list')
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        $artikel = DB::table('artikel')
-            ->join('mst_penulis', 'artikel.penulisid', '=', 'mst_penulis.idpenulis')
-            ->select('artikel.*', 'mst_penulis.nama_penulis')
-            ->where('artikel.idartikel', $idartikel)
-            ->first();
-
-        if (!$artikel) {
-            abort(404, 'Artikel tidak ditemukan');
-        }
-
-        $penulis = DB::table('mst_penulis')->get();
-
-        return view('admin.artikel.edit', compact('artikel', 'penulis'));
     }
 
     public function update(Request $request, $id)
     {
-        try {
-            $idartikel = decrypt($id);
-        } catch (\Exception $e) {
-            return redirect()->route('admin.artikel.list')->with('error', 'Artikel tidak ditemukan');
-        }
-
-        // dd($request->all()); // Debug: Melihat seluruh input request yang dikirim
-
         $request->validate([
             'penulisid'      => 'required|exists:mst_penulis,idpenulis',
             'judul_artikel'  => 'required|string|max:255',
-            'isi_artikel'    => 'required',
+            'isi_artikel'    => 'required|string',
             'tanggal_rilis'  => 'required|date',
             'status'         => 'required|in:draft,published,archived',
-            'gambar'         => 'nullable|image|mimes:jpg,jpeg,png,gif,bmp,svg,webp|max:102400', // 100MB
+            'gambar'         => 'nullable|image|mimes:jpg,jpeg,png,gif,bmp,svg,webp|max:102400',
         ]);
 
-        DB::beginTransaction();
         try {
-            $artikel = DB::table('artikel')->where('idartikel', $idartikel)->first();
-            if (!$artikel) {
-                return redirect()->route('admin.artikel.list')->with('error', 'Artikel tidak ditemukan.');
-            }
+            $idartikel = decrypt($id); // pastikan ID terenkripsi di route
 
-            $gambarPath = $artikel->gambar; // Gunakan gambar lama sebagai default
+            $gambarPath = $request->old_gambar ?? null;
 
-            // **1. Periksa apakah gambar akan dihapus**
-            if ($request->has('hapus_gambar') && $artikel->gambar) {
-                if (Storage::disk('public')->exists($artikel->gambar)) {
-                    Storage::disk('public')->delete($artikel->gambar);
+            // Jika user centang checkbox hapus gambar
+            if ($request->has('hapus_gambar')) {
+                $gambarPath = null;
+
+                // (Opsional) Hapus file lama juga dari storage
+                if ($request->old_gambar && Storage::disk('public')->exists($request->old_gambar)) {
+                    Storage::disk('public')->delete($request->old_gambar);
                 }
-                $gambarPath = null; // Kosongkan gambar di database
-                //dd('Gambar dihapus, gambarPath:', $gambarPath); // Debug: Mengecek apakah gambar berhasil dihapus
             }
 
-            // **2. Periksa apakah ada gambar baru yang diupload**
+            // Jika user upload gambar baru
             if ($request->hasFile('gambar')) {
-                //dd($request->file('gambar')); // Debug: Cek apakah file gambar masuk dalam request
-
                 $gambar = $request->file('gambar');
                 $filename = time() . '-' . $gambar->getClientOriginalName();
-                $gambarPath = $gambar->storeAs('artikel', $filename, 'public'); // Simpan di storage/app/public/artikel
-
-                //dd($gambarPath);
-                // Hapus gambar lama jika ada
-                if ($artikel->gambar && Storage::disk('public')->exists($artikel->gambar)) {
-                    Storage::disk('public')->delete($artikel->gambar);
-                }
+                $gambarPath = Storage::disk('public')->putFileAs('artikel', $gambar, $filename);
             }
 
-            // dd('Sebelum update ke database', $gambarPath); // Debug: Melihat path gambar sebelum update database
+            // Format payload update
+            $payload = [
+                'table' => 'artikel',
+                'data' => [
+                    'PENULISID'     => $request->penulisid,
+                    'JUDUL_ARTIKEL' => $request->judul_artikel,
+                    'ISI_ARTIKEL'   => $request->isi_artikel,
+                    'TANGGAL_RILIS' => [
+                        'type' => 'date',
+                        'value' => \Carbon\Carbon::createFromFormat('Y-m-d', $request->tanggal_rilis)->format('d-m-Y')
+                    ],
+                    'GAMBAR'        => $gambarPath,
+                    'STATUS'        => $request->status,
+                    'UPDATED_AT'    => now()->format('d-M-y h.i.s A'),
+                ],
+                'conditions' => [
+                    'IDARTIKEL' => $idartikel
+                ],
+                'operators' => [""]
+            ];
+            //dd($payload);
+            // Kirim update ke API
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/update_up2k', $payload);
 
-            // **3. Simpan perubahan ke database**
-            DB::table('artikel')
-                ->where('idartikel', $idartikel)
-                ->update([
-                    'penulisid'     => $request->penulisid,
-                    'judul_artikel' => $request->judul_artikel,
-                    'isi_artikel'   => $request->isi_artikel,
-                    'tanggal_rilis' => $request->tanggal_rilis,
-                    'status'        => $request->status,
-                    'gambar'        => $gambarPath, // Update gambar di database
-                    'updated_at'    => now(),
-                ]);
+            if (!$response->successful()) {
+                return redirect()->route('admin.artikel.list')
+                    ->with('error', 'Gagal mengupdate data ke API eksternal: ' . $response->body());
+            }
 
-            DB::commit();
-            return redirect()->route('admin.artikel.list')->with('success', 'Artikel berhasil diperbarui');
+            $result = $response->json();
+            if (!empty($result['data'][0]['status']) && $result['data'][0]['status'] === 'gagal') {
+                return redirect()->route('admin.artikel.list')
+                    ->with('error', 'API Gagal: ' . ($result['data'][0]['deskripsi'] ?? ''));
+            }
+
+            return redirect()->route('admin.artikel.list')
+                ->with('success', 'Data berhasil diperbarui!');
         } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->route('admin.artikel.list')->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
+            return redirect()->route('admin.artikel.list')
+                ->with('error', 'Gagal mengupdate data: ' . $e->getMessage());
         }
     }
 
@@ -202,22 +318,39 @@ class ArtikelController extends Controller
         try {
             $idartikel = decrypt($id);
         } catch (\Exception $e) {
-            abort(404, 'Artikel tidak ditemukan');
-        }
-
-        $artikel = DB::table('artikel')->where('idartikel', $idartikel)->first();
-        if (!$artikel) {
-            return redirect()->route('admin.artikel.list')
-                ->with('error', 'Artikel tidak ditemukan.');
+            abort(404, 'Artikel tidak valid');
         }
 
         try {
-            DB::table('artikel')->where('idartikel', $idartikel)->delete();
+            // Kirim request DELETE ke API
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept' => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/delete_up2k', [
+                'table' => 'artikel',
+                'conditions' => [
+                    'IDARTIKEL' => $idartikel
+                ],
+                'operators' => [""] // kosongkan karena hanya 1 kondisi
+            ]);
+
+            if (!$response->successful()) {
+                return redirect()->route('admin.artikel.list')
+                    ->with('error', 'Gagal menghapus data dari API eksternal: ' . $response->body());
+            }
+
+            $result = $response->json();
+
+            if (!empty($result['data'][0]['status']) && $result['data'][0]['status'] === 'gagal') {
+                return redirect()->route('admin.artikel.list')
+                    ->with('error', 'API Gagal: ' . ($result['data'][0]['deskripsi'] ?? ''));
+            }
+
             return redirect()->route('admin.artikel.list')
-                ->with('success', 'Artikel berhasil dihapus.');
+                ->with('success', 'Data berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('admin.artikel.list')
-                ->with('error', 'Terjadi kesalahan saat menghapus artikel: ' . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage());
         }
     }
 }

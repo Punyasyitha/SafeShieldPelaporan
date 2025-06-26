@@ -18,18 +18,12 @@
             </div>
         @endif
 
-        {{-- Tombol Tambah & Pencarian --}}
-        <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-2">
-            <input type="text" id="searchInput" placeholder="Cari pengaduan..."
-                class="border border-gray-300 rounded-lg py-2 px-2 focus:outline-none focus:ring-2 focus:ring-purple-200 w-full md:w-1/3">
-        </div>
-
         <div class="w-full overflow-x-auto">
             <table class="table-fixed text-sm text-left border-gray-200" id="pengaduanUserTable">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="py-3 px-2 min-w-[50px] truncate">No</th>
-                        <th class="py-3 px-2 min-w-[100px] truncate">Status</th>
+                        <th class="py-3 px-2 min-w-[100px] truncate">Proses</th>
                         <th class="py-3 px-2 min-w-[100px] truncate">Tanggal Kejadian</th>
                         <th class="py-3 px-2 min-w-[120px] truncate">Nama Terlapor</th>
                         <th class="py-3 px-2 min-w-[120px] truncate">Tempat Kejadian</th>
@@ -76,7 +70,7 @@
 
                                         <!-- Modal -->
                                         <div x-show="open" x-transition x-cloak
-                                            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+                                            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20">
                                             <div @click.away="open = false"
                                                 class="bg-white rounded-lg p-6 w-[90%] max-w-xl overflow-y-auto max-h-[90vh]">
                                                 <h2 class="text-xl font-bold mb-4 text-purple-600">Detail Pengaduan</h2>
@@ -128,6 +122,10 @@
                     @endif
                 </tbody>
             </table>
+            <!-- Pagination -->
+            <div class="mt-4">
+                {{ $list->links() }}
+            </div>
         </div>
     </div>
 
@@ -135,18 +133,27 @@
 
     @push('styles')
         <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    @endpush
 
-    @push('scripts')
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
         <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-    @endpush
 
-    @push('scripts')
         <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('searchInput');
+                const tableRows = document.querySelectorAll('#pengaduanUserTable tbody tr');
+
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = searchInput.value.toLowerCase();
+
+                    tableRows.forEach(row => {
+                        const rowText = row.textContent.toLowerCase();
+                        const match = rowText.includes(searchTerm);
+                        row.style.display = match ? '' : 'none';
+                    });
+                });
+            });
             $(document).ready(function() {
                 $('#pengaduanUserTable').DataTable({
-                    searching: false, // matikan fitur pencarian
                     responsive: true,
                     language: {
                         lengthMenu: "Tampilkan _MENU_ data",
@@ -161,15 +168,6 @@
                         infoEmpty: "Menampilkan 0 data",
                         infoFiltered: "(difilter dari _MAX_ total data)"
                     }
-                });
-            });
-
-            // Fitur Pencarian
-            document.getElementById('searchInput').addEventListener('input', function() {
-                const filter = this.value.toLowerCase();
-                const rows = document.querySelectorAll('#pengaduanUserTable tbody tr');
-                rows.forEach(row => {
-                    row.style.display = row.innerText.toLowerCase().includes(filter) ? '' : 'none';
                 });
             });
 

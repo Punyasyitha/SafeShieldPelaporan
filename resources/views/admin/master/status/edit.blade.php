@@ -21,20 +21,20 @@
             </div>
 
             <!-- Form Edit Status -->
-            <form id="editStatusForm" action="{{ route('admin.master.status.update', encrypt($status->idstatus)) }}"
+            <form id="editStatusForm" action="{{ route('admin.master.status.update', encrypt($sts->IDSTATUS)) }}"
                 method="POST">
                 @csrf
                 @method('PUT')
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">ID Status</label>
-                    <input type="text" name="idstatus" value="{{ $status->idstatus }}" readonly
+                    <input type="text" name="idstatus" value="{{ $sts->IDSTATUS }}" readonly
                         class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none">
                 </div>
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Nama Status</label>
-                    <input type="text" name="nama_status" value="{{ $status->nama_status }}"
+                    <input type="text" name="nama_status" value="{{ $sts->NAMA_STATUS }}"
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-purple-200"
                         required>
                 </div>

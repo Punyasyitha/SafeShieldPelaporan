@@ -34,7 +34,7 @@
                     <select name="materiid" required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                         @foreach ($materi as $mtr)
-                            <option value="{{ $mtr->idmateri }}">{{ $mtr->judul_materi }}</option>
+                            <option value="{{ $mtr['IDMATERI'] }}">{{ $mtr['JUDUL_MATERI'] }}</option>
                         @endforeach
                     </select>
                 </div>

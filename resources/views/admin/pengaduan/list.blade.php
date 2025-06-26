@@ -110,6 +110,10 @@
                 </tbody>
             </table>
         </div>
+        <!-- Pagination -->
+        <div class="mt-4">
+            {{ $list->links() }}
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -129,30 +133,23 @@
 
     @push('scripts')
         <script>
+            // Searching
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('searchInput');
+                const tableRows = document.querySelectorAll('#pengaduanTable tbody tr');
+
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = searchInput.value.toLowerCase();
+
+                    tableRows.forEach(row => {
+                        const rowText = row.textContent.toLowerCase();
+                        const match = rowText.includes(searchTerm);
+                        row.style.display = match ? '' : 'none';
+                    });
+                });
+            });
+
             $(document).ready(function() {
-                // Inisialisasi DataTable sekaligus menyimpan ke variabel `table`
-                var table = $('#pengaduanTable').DataTable({
-                    responsive: true,
-                    language: {
-                        lengthMenu: "Tampilkan _MENU_ data",
-                        info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
-                        paginate: {
-                            first: "Pertama",
-                            last: "Terakhir",
-                            next: "Berikutnya",
-                            previous: "Sebelumnya"
-                        },
-                        zeroRecords: "Tidak ada data yang cocok",
-                        infoEmpty: "Menampilkan 0 data",
-                        infoFiltered: "(difilter dari _MAX_ total data)"
-                    }
-                });
-
-                // Fitur pencarian manual
-                $('#searchInput').on('keyup', function() {
-                    table.search(this.value).draw();
-                });
-
                 // Konfirmasi hapus menggunakan SweetAlert2
                 document.querySelectorAll('.delete-btn').forEach(button => {
                     button.addEventListener('click', function() {

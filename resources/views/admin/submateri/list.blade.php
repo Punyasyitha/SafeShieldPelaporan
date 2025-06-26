@@ -63,14 +63,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($list as $sbmtr)
+                        @foreach ($list as $index => $sbmtr)
                             <tr class="border-b border-gray-300">
-                                <td class="py-3 px-2 truncate">{{ $loop->iteration }}</td>
-                                <td class="py-3 px-2 truncate">{{ $sbmtr->idsubmateri }}</td>
+                                <td class="py-3 px-2 truncate">{{ $index + 1 }}</td>
+                                <td class="py-3 px-2 truncate">{{ $sbmtr['IDSUBMATERI'] ?? '-' }}</td>
                                 <td class="py-3 px-2 truncate">
                                     {{ $sbmtr->judul_materi ?? '-' }}
                                 </td>
-                                <td class="py-3 px-2 truncate">{{ $sbmtr->judul_submateri }}</td>
+                                <td class="py-3 px-2 truncate">{{ $sbmtr['JUDUL_'] ?? '-' }}</td>
                                 <td class="py-3 px-2 truncate">{{ $sbmtr->isi }}</td>
                                 <td class="py-3 px-2 flex flex-wrap gap-2">
                                     <button
@@ -105,6 +105,10 @@
                     </tbody>
                 </table>
             </div>
+            <!-- Pagination -->
+            <div class="mt-4">
+                {{ $list->links() }}
+            </div>
         </div>
     </div>
 
@@ -125,30 +129,23 @@
 
     @push('scripts')
         <script>
+            // Searching
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('searchInput');
+                const tableRows = document.querySelectorAll('#submateriTable tbody tr');
+
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = searchInput.value.toLowerCase();
+
+                    tableRows.forEach(row => {
+                        const rowText = row.textContent.toLowerCase();
+                        const match = rowText.includes(searchTerm);
+                        row.style.display = match ? '' : 'none';
+                    });
+                });
+            });
+
             $(document).ready(function() {
-                // Inisialisasi DataTable sekaligus menyimpan ke variabel `table`
-                var table = $('#submateriTable').DataTable({
-                    responsive: true,
-                    language: {
-                        lengthMenu: "Tampilkan _MENU_ data",
-                        info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
-                        paginate: {
-                            first: "Pertama",
-                            last: "Terakhir",
-                            next: "Berikutnya",
-                            previous: "Sebelumnya"
-                        },
-                        zeroRecords: "Tidak ada data yang cocok",
-                        infoEmpty: "Menampilkan 0 data",
-                        infoFiltered: "(difilter dari _MAX_ total data)"
-                    }
-                });
-
-                // Fitur pencarian manual
-                $('#searchInput').on('keyup', function() {
-                    table.search(this.value).draw();
-                });
-
                 // Konfirmasi hapus menggunakan SweetAlert2
                 document.querySelectorAll('.delete-btn').forEach(button => {
                     button.addEventListener('click', function() {
