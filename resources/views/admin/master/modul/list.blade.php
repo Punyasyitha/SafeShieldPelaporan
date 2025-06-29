@@ -88,14 +88,15 @@
                                         <i class="fas fa-edit"></i>
                                     </button>
 
-                                    <form action="{{ route('admin.master.modul.delete', encrypt($mod['IDMODUL'])) }}"
+                                    <form
+                                        action="{{ route('admin.master.modul.delete', encrypt($mod['IDMODUL'])) }}"
                                         method="POST" class="delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button"
-                                            class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded delete-btn inline-flex items-center gap-2"
+                                            class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded delete-btn inline-flex items-center"
                                             title="Hapus" data-id="{{ encrypt($mod['IDMODUL']) }}">
-                                            <i class="fas fa-trash"></i>
+                                            <i class="fas fa-trash mr-1"></i>
                                         </button>
                                     </form>
                                 </td>
@@ -126,7 +127,7 @@
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const table = document.getElementById('kategoriTable');
+                const table = document.getElementById('modulTable');
                 const headers = table.querySelectorAll('th.sort');
                 const tbody = table.querySelector('tbody');
                 let currentSort = {
@@ -192,7 +193,7 @@
                 const searchInput = document.getElementById('searchInput');
                 searchInput.addEventListener('input', function() {
                     const searchTerm = searchInput.value.toLowerCase();
-                    document.querySelectorAll('#kategoriTable tbody tr').forEach(row => {
+                    document.querySelectorAll('#modulTable tbody tr').forEach(row => {
                         const match = row.textContent.toLowerCase().includes(searchTerm);
                         row.style.display = match ? '' : 'none';
                     });

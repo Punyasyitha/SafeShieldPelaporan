@@ -12,7 +12,7 @@
                     </button>
 
                     <button type="button"
-                        onclick="window.location='{{ route('admin.materi.edit', encrypt($materi->idmateri)) }}'"
+                        onclick="window.location='{{ route('admin.materi.edit', encrypt($mtr->IDMATERI)) }}'"
                         class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg">
                         <i class="fas fa-pen-to-square me-1"></i><span class="font-weight-bold">Edit</span>
                     </button>
@@ -21,38 +21,33 @@
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">ID Materi</label>
-                <p class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg">{{ $materi->idmateri }}</p>
+                <p class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg">{{ $mtr->IDMATERI }}</p>
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Nama Modul</label>
-                <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">{{ $materi->nama_modul }}</p>
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700">Deskripsi</label>
-                <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">{{ $materi->deskripsi }}</p>
+                <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">{{ $mtr->MODULID }}</p>
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Nama Kategori</label>
-                <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">{{ $materi->nama_kategori }}</p>
+                <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">{{ $mtr->KATEGORIID }}</p>
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Judul Materi</label>
-                <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">{{ $materi->judul_materi }}</p>
+                <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">{{ $mtr->JUDUL_MATERI }}</p>
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Sumber</label>
                 <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">
-                    @if (filter_var($materi->sumber, FILTER_VALIDATE_URL))
-                        <a href="{{ $materi->sumber }}" class="text-blue-600 hover:underline" target="_blank">
-                            {{ $materi->sumber }}
+                    @if (filter_var($mtr->SUMBER, FILTER_VALIDATE_URL))
+                        <a href="{{ $mtr->SUMBER }}" class="text-blue-600 hover:underline" target="_blank">
+                            {{ $mtr->SUMBER }}
                         </a>
                     @else
-                        {{ $materi->sumber }}
+                        {{ $mtr->SUMBER }}
                     @endif
                 </p>
             </div>

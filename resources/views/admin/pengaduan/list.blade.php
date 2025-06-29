@@ -46,60 +46,60 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($list as $pgd)
+                    @foreach ($list as $index => $pgd)
                         <tr class="border-t border-gray-200">
-                            <td class="py-3 px-2 truncate">{{ $loop->iteration }}</td>
-                            <td class="py-3 px-2 truncate">{{ $pgd->idpengaduan }}</td>
+                            <td class="py-3 px-2 truncate">{{ $index + 1 }}</td>
+                            <td class="py-3 px-2 truncate">{{ $pgd['IDPENGADUAN'] ?? '-'  }}</td>
                             <td class="py-3 px-2 truncate">
                                 <span
-                                    class="inline-block px-3 py-1 rounded-full font-semibold break-words {{ $warnaStatus[$pgd->nama_status] ?? 'bg-gray-200 text-gray-800' }}">
-                                    {{ $pgd->nama_status }}
+                                    class="inline-block px-3 py-1 rounded-full font-semibold break-words {{ $warnaStatus[$pgd['NAMA_STATUS'] ?? '-'] ?? 'bg-gray-200 text-gray-800' }}">
+                                    {{ $pgd['NAMA_STATUS'] ?? '-'  }}
                                 </span>
                             </td>
-                            <td class="py-3 px-2 truncate" title="{{ $pgd->nama_pengadu }}">{{ $pgd->nama_pengadu }}
+                            <td class="py-3 px-2 truncate" title="{{ $pgd['NAMA_PENGADU'] ?? '-'  }}">{{ $pgd['NAMA_PENGADU'] ?? '-'  }}
                             </td>
-                            <td class="py-3 px-2 truncate" title="{{ $pgd->no_telepon }}">
-                                {{ Str::limit(strip_tags($pgd->no_telepon), 8, '...') }}</td>
-                            <td class="py-3 px-2 truncate" title="{{ $pgd->email }}">
-                                {{ Str::limit(strip_tags($pgd->email), 8, '...') }}</td>
-                            <td class="py-3 px-2 truncate">{{ $pgd->nama_terlapor }}</td>
-                            <td class="py-3 px-2 truncate">{{ $pgd->tmp_kejadian }}</td>
-                            <td class="py-3 px-2 truncate">{{ $pgd->tanggal_kejadian }}</td>
-                            <td class="py-3 px-2 truncate" title="{{ strip_tags($pgd->detail) }}">
-                                {{ Str::limit(strip_tags($pgd->detail), 50, '...') }}</td>
+                            <td class="py-3 px-2 truncate" title="{{ $pgd['NO_TELEPON'] ?? '-'  }}">
+                                {{ Str::limit(strip_tags($pgd['NO_TELEPON'] ?? '-' ), 8, '...') }}</td>
+                            <td class="py-3 px-2 truncate" title="{{ $pgd['EMAIL'] ?? '-'  }}">
+                                {{ Str::limit(strip_tags($pgd['EMAIL'] ?? '-' ), 8, '...') }}</td>
+                            <td class="py-3 px-2 truncate">{{ $pgd['NAMA_TERLAPOR'] ?? '-'  }}</td>
+                            <td class="py-3 px-2 truncate">{{ $pgd['TMP_KEJADIAN'] ?? '-'  }}</td>
+                            <td class="py-3 px-2 truncate">{{ $pgd['TANGGAL_KEJADIAN'] ?? '-'  }}</td>
+                            <td class="py-3 px-2 truncate" title="{{ strip_tags($pgd['DETAIL'] ?? '-' ) }}">
+                                {{ Str::limit(strip_tags($pgd['DETAIL'] ?? '-' ), 50, '...') }}</td>
                             <td class="py-3 px-2 truncate">
-                                @if ($pgd->bukti)
-                                    <a href="{{ asset('storage/' . $pgd->bukti) }}" target="_blank"
+                                @if ($pgd['BUKTI'] ?? '-' )
+                                    <a href="{{ asset('storage/' . $pgd['BUKTI'] ?? '-') }}" target="_blank"
                                         class="text-blue-600 underline mr-2">Lihat</a>
-                                    <a href="{{ asset('storage/' . $pgd->bukti) }}" download
+                                    <a href="{{ asset('storage/' . $pgd['BUKTI'] ?? '-') }}" download
                                         class="text-green-600 underline">Download</a>
                                 @else
                                     <span class="text-gray-400">Tidak ada</span>
                                 @endif
                             </td>
-                            <td class="py-3 px-2 truncate" title="{{ $pgd->keterangan }}">
-                                {{ Str::limit(strip_tags($pgd->keterangan), 30, '...') }}</td>
+                            <td class="py-3 px-2 truncate" title="{{ $pgd['KETERANGAN'] ?? '-' }}">
+                                {{ Str::limit(strip_tags($pgd['KETERANGAN'] ?? '-'), 30, '...') }}</td>
                             <td class="py-3 px-2 truncate">
                                 <div class="flex flex-wrap gap-2">
                                     <button
                                         class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-2 rounded items-center gap-2"
                                         title="Lihat"
-                                        onclick="window.location='{{ route('admin.pengaduan.show', encrypt($pgd->idpengaduan)) }}'">
+                                        onclick="window.location='{{ route('admin.pengaduan.show', encrypt($pgd['IDPENGADUAN'])) }}'">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                     <button
                                         class="bg-green-500 hover:bg-green-600 text-white inline-flex py-1 px-2 rounded items-center gap-2"
                                         title="Edit"
-                                        onclick="window.location='{{ route('admin.pengaduan.edit', encrypt($pgd->idpengaduan)) }}'">
+                                        onclick="window.location='{{ route('admin.pengaduan.edit', encrypt($pgd['IDPENGADUAN'])) }}'">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <form action="{{ route('admin.pengaduan.delete', encrypt($pgd->idpengaduan)) }}"
+                                    <form action="{{ route('admin.pengaduan.delete', encrypt($pgd['IDPENGADUAN'])) }}"
                                         method="POST" class="delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button"
                                             class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded delete-btn inline-flex items-center gap-2"
-                                            title="Hapus" data-id="{{ encrypt($pgd->idpengaduan) }}">
+                                            title="Hapus" data-id="{{ encrypt($pgd['IDPENGADUAN']) }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -109,10 +109,6 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>
-        <!-- Pagination -->
-        <div class="mt-4">
-            {{ $list->links() }}
         </div>
     </div>
 

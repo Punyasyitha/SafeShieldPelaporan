@@ -68,15 +68,15 @@
                                 <td class="py-3 px-2 truncate">{{ $index + 1 }}</td>
                                 <td class="py-3 px-2 truncate">{{ $sbmtr['IDSUBMATERI'] ?? '-' }}</td>
                                 <td class="py-3 px-2 truncate">
-                                    {{ $sbmtr->judul_materi ?? '-' }}
+                                    {{ $sbmtr['MATERIID'] }}
                                 </td>
-                                <td class="py-3 px-2 truncate">{{ $sbmtr['JUDUL_'] ?? '-' }}</td>
-                                <td class="py-3 px-2 truncate">{{ $sbmtr->isi }}</td>
+                                <td class="py-3 px-2 truncate">{{ $sbmtr['JUDUL_SUBMATERI'] ?? '-' }}</td>
+                                <td class="py-3 px-2 truncate">{{ $sbmtr['ISI'] }}</td>
                                 <td class="py-3 px-2 flex flex-wrap gap-2">
                                     <button
                                         class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
                                         title="Lihat"
-                                        onclick="window.location='{{ route('admin.submateri.show', encrypt($sbmtr->idsubmateri)) }}'">
+                                        onclick="window.location='{{ route('admin.submateri.show', encrypt($sbmtr['IDSUBMATERI'])) }}'">
                                         <i class="fas fa-eye"></i>
                                     </button>
 
@@ -84,18 +84,19 @@
                                     <button
                                         class="bg-green-500 hover:bg-green-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
                                         title="Edit"
-                                        onclick="window.location='{{ route('admin.submateri.edit', encrypt($sbmtr->idsubmateri)) }}'">
+                                        onclick="window.location='{{ route('admin.submateri.edit', encrypt($sbmtr['IDSUBMATERI'])) }}'">
                                         <i class="fas fa-edit"></i>
                                     </button>
 
                                     {{-- Tombol Hapus --}}
-                                    <form action="{{ route('admin.submateri.delete', encrypt($sbmtr->idsubmateri)) }}"
+                                    <form
+                                        action="{{ route('admin.submateri.delete', encrypt($sbmtr['IDSUBMATERI'])) }}"
                                         method="POST" class="delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button"
                                             class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded delete-btn inline-flex items-center gap-2"
-                                            title="Hapus" data-id="{{ encrypt($sbmtr->idsubmateri) }}">
+                                            title="Hapus" data-id="{{ encrypt($sbmtr['IDSUBMATERI']) }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -105,47 +106,35 @@
                     </tbody>
                 </table>
             </div>
-            <!-- Pagination -->
-            <div class="mt-4">
-                {{ $list->links() }}
-            </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @push('styles')
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    @endpush
-    <style>
-        div.dataTables_filter {
-            display: none;
-        }
-    </style>
+        <style>
+            .sort-icon {
+                font-size: 0.75rem;
+                margin-left: 0.25rem;
+                color: #666;
+            }
 
-    @push('scripts')
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+            .sort-desc::after {
+                content: " ▼";
+            }
+        </style>
     @endpush
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @push('scripts')
         <script>
-            // Searching
             document.addEventListener('DOMContentLoaded', function() {
-                const searchInput = document.getElementById('searchInput');
-                const tableRows = document.querySelectorAll('#submateriTable tbody tr');
+                const table = document.getElementById('submateriTable');
+                const headers = table.querySelectorAll('th.sort');
+                const tbody = table.querySelector('tbody');
+                let currentSort = {
+                    column: null,
+                    order: 'asc'
+                };
 
-                searchInput.addEventListener('input', function() {
-                    const searchTerm = searchInput.value.toLowerCase();
-
-                    tableRows.forEach(row => {
-                        const rowText = row.textContent.toLowerCase();
-                        const match = rowText.includes(searchTerm);
-                        row.style.display = match ? '' : 'none';
-                    });
-                });
-            });
-
-            $(document).ready(function() {
                 // Konfirmasi hapus menggunakan SweetAlert2
                 document.querySelectorAll('.delete-btn').forEach(button => {
                     button.addEventListener('click', function() {
@@ -167,16 +156,58 @@
                     });
                 });
 
-                // Auto-hide alert setelah 3 detik
+                headers.forEach(header => {
+                    header.addEventListener('click', function() {
+                        const column = header.dataset.sort;
+                        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+                        const isAsc = currentSort.column === column && currentSort.order === 'asc';
+                        currentSort = {
+                            column,
+                            order: isAsc ? 'desc' : 'asc'
+                        };
+
+                        headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                        header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+
+                        rows.sort((a, b) => {
+                            const aText = a.querySelector(
+                                `td:nth-child(${header.cellIndex + 1})`).innerText.trim();
+                            const bText = b.querySelector(
+                                `td:nth-child(${header.cellIndex + 1})`).innerText.trim();
+
+                            return isAsc ?
+                                aText.localeCompare(bText, undefined, {
+                                    numeric: true
+                                }) :
+                                bText.localeCompare(aText, undefined, {
+                                    numeric: true
+                                });
+                        });
+
+                        rows.forEach(row => tbody.appendChild(row));
+                    });
+                });
+
+                // Search
+                const searchInput = document.getElementById('searchInput');
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = searchInput.value.toLowerCase();
+                    document.querySelectorAll('#submateriTable tbody tr').forEach(row => {
+                        const match = row.textContent.toLowerCase().includes(searchTerm);
+                        row.style.display = match ? '' : 'none';
+                    });
+                });
+
+                // Alert fadeout
                 setTimeout(() => {
                     document.querySelectorAll('.alert').forEach(alert => {
-                        alert.style.transition = "opacity 0.5s ease-out";
-                        alert.style.opacity = "0";
+                        alert.style.transition = 'opacity 0.5s ease-out';
+                        alert.style.opacity = 0;
                         setTimeout(() => alert.remove(), 500);
                     });
                 }, 3000);
             });
         </script>
     @endpush
-
 </x-app-layout>

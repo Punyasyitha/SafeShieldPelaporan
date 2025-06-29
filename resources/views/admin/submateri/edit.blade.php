@@ -20,14 +20,14 @@
             </div>
 
             <!-- Form Edit Modul -->
-            <form id="editSubMateriform" action="{{ route('admin.submateri.update', encrypt($submateri->idsubmateri)) }}"
+            <form id="editSubMateriform" action="{{ route('admin.submateri.update', encrypt($sbmtr->IDSUBMATERI)) }}"
                 method="POST">
                 @csrf
                 @method('PUT')
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">ID Sub Materi</label>
-                    <input type="text" name="idsubmateri" value="{{ old('idsubmateri', $submateri->idsubmateri) }}" readonly
+                    <input type="text" name="idsubmateri" value="{{ old('idsubmateri', $sbmtr->IDSUBMATERI) }}" readonly
                         class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none">
                 </div>
 
@@ -35,10 +35,10 @@
                     <label class="block text-sm font-medium text-gray-700">Judul Materi</label>
                     <select name="materiid" required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
-                        @foreach ($materi as $mtr)
-                            <option value="{{ $mtr->idmateri }}"
-                                {{ $mtr->idmateri == $submateri->materiid ? 'selected' : '' }}>
-                                {{ $mtr->judul_materi }}
+                        @foreach ($materi as $index => $mtr)
+                            <option value="{{ $mtr->IDMATERI }}"
+                                {{ $mtr->IDMATERI == $sbmtr->MATERIID ? 'selected' : '' }}>
+                                {{ $mtr->JUDUL_MATERI }}
                             </option>
                         @endforeach
                     </select>
@@ -46,7 +46,7 @@
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Judul Sub Materi</label>
-                    <input type="text" name="judul_submateri" value="{{ old('judul_submateri', $submateri->judul_submateri) }}"
+                    <input type="text" name="judul_submateri" value="{{ old('judul_submateri', $sbmtr->JUDUL_SUBMATERI) }}"
                         required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                 </div>
@@ -54,7 +54,7 @@
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Isi Materi</label>
                     <textarea name="isi" required rows="4"
-                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 resize-none">{{ old('isi', $submateri->isi) }}</textarea>
+                        class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200 resize-none">{{ old('isi', $sbmtr->ISI) }}</textarea>
                 </div>
 
             </form>

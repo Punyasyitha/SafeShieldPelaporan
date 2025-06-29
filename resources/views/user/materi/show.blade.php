@@ -10,7 +10,7 @@
 
             <!-- Judul Materi -->
             <h2 class="text-xl font-bold text-gray-800 tracking-wide text-center flex-1">
-                {{ strtoupper($submateriUtama->judul_materi) }}
+                {{ strtoupper($submateriUtama->JUDUL_MATERI) }}
             </h2>
 
             <!-- Spacer untuk menyimbangkan flex -->
@@ -24,7 +24,7 @@
             <div class="w-12 md:w-1/5 bg-purple-400 p-4 shadow-md rounded-l-lg relative">
                 {{-- Judul Materi Utama (hanya tampil di desktop) --}}
                 <h2 class="text-base md:text-lg font-bold text-white mb-4 break-words hidden md:block">
-                    {{ strtoupper($submateriUtama->judul_materi) }}
+                    {{ strtoupper($submateriUtama->JUDUL_MATERI) }}
                 </h2>
 
                 {{-- Hamburger Menu --}}
@@ -40,13 +40,13 @@
                 <ul class="hidden md:block space-y-6 mt-8 border-l-2 border-white pl-2">
                     @foreach ($submateris as $submateri)
                         <li>
-                            <a href="{{ route('user.materi.show', encrypt($submateri->idsubmateri)) }}"
-                                class="flex items-start gap-2 text-sm {{ $submateri->idsubmateri == $submateriUtama->idsubmateri ? 'text-white font-bold' : 'text-gray-800' }}">
+                            <a href="{{ route('user.materi.show', encrypt($submateri->IDSUBMATERI)) }}"
+                                class="flex items-start gap-2 text-sm {{ $submateri->IDSUBMATERI == $submateriUtama->IDSUBMATERI ? 'text-white font-bold' : 'text-gray-800' }}">
                                 {{-- <div
                                     class="mt-1 w-3 h-3 rounded-full border-2
-                                    {{ $submateri->idsubmateri == $submateriUtama->idsubmateri ? 'bg-purple-400 border-purple-400' : 'bg-gray-300 border-gray-400' }}">
+                                    {{ $submateri->IDSUBMATERI == $submateriUtama->IDSUBMATERI ? 'bg-purple-400 border-purple-400' : 'bg-gray-300 border-gray-400' }}">
                                 </div> --}}
-                                <span class="break-words">{{ Str::limit($submateri->judul_submateri, 30) }}</span>
+                                <span class="break-words">{{ Str::limit($submateri->JUDUL_SUBMATERI, 30) }}</span>
                             </a>
                         </li>
                     @endforeach
@@ -55,18 +55,18 @@
                 {{-- Dropdown Submateri (mobile) --}}
                 <div x-show="open" class="absolute top-12 left-0 w-60 bg-white border shadow-lg z-50 md:hidden p-3">
                     <h2 class="text-base font-bold text-gray-800 mb-2 break-words md:hidden">
-                        {{ strtoupper($submateriUtama->judul_materi) }}
+                        {{ strtoupper($submateriUtama->JUDUL_MATERI) }}
                     </h2>
                     <ul class="space-y-2 border-l-2 border-gray-300 pl-2">
                         @foreach ($submateris as $submateri)
                             <li>
-                                <a href="{{ route('user.materi.show', encrypt($submateri->idsubmateri)) }}"
-                                    class="flex items-center gap-2 {{ $submateri->idsubmateri == $submateriUtama->idsubmateri ? 'text-gray-600 font-semibold' : 'text-gray-600' }}">
+                                <a href="{{ route('user.materi.show', encrypt($submateri->IDSUBMATERI)) }}"
+                                    class="flex items-center gap-2 {{ $submateri->IDSUBMATERI == $submateriUtama->IDSUBMATERI ? 'text-gray-600 font-semibold' : 'text-gray-600' }}">
                                     <div
                                         class="w-3 h-3 rounded-full border-2
-                                        {{ $submateri->idsubmateri == $submateriUtama->idsubmateri ? 'bg-purple-400 border-purple-400' : 'bg-gray-300 border-gray-400' }}">
+                                        {{ $submateri->IDSUBMATERI == $submateriUtama->IDSUBMATERI ? 'bg-purple-400 border-purple-400' : 'bg-gray-300 border-gray-400' }}">
                                     </div>
-                                    {{ $submateri->judul_submateri }}
+                                    {{ $submateri->JUDUL_SUBMATERI }}
                                 </a>
                             </li>
                         @endforeach
@@ -80,19 +80,19 @@
             class="w-full {{ $submateris->count() > 1 ? 'md:flex-1 rounded-r-lg' : 'rounded-lg' }} bg-white p-6 shadow-md">
             {{-- Judul Submateri --}}
             <h3 class="text-2xl font-semibold text-gray-700 mb-6">
-                {{ $submateriUtama->judul_submateri }}
+                {{ $submateriUtama->JUDUL_SUBMATERI }}
             </h3>
 
-            {{-- Isi Materi --}}
+            {{-- ISI Materi --}}
             <div class="text-gray-800 leading-relaxed">
-                {!! nl2br(e($submateriUtama->isi)) !!}
+                {!! nl2br(e($submateriUtama->ISI)) !!}
             </div>
 
             {{-- Navigasi Pagination --}}
             @if ($submateris->count() > 1)
                 @php
                     $currentIndex = $submateris->search(
-                        fn($item) => $item->idsubmateri == $submateriUtama->idsubmateri,
+                        fn($item) => $item->IDSUBMATERI == $submateriUtama->IDSUBMATERI,
                     );
                     $prev = $submateris[$currentIndex - 1] ?? null;
                     $next = $submateris[$currentIndex + 1] ?? null;
@@ -100,7 +100,7 @@
 
                 <div class="flex justify-end items-center gap-4 mt-8">
                     @if ($prev)
-                        <a href="{{ route('user.materi.show', encrypt($prev->idsubmateri)) }}"
+                        <a href="{{ route('user.materi.show', encrypt($prev->IDSUBMATERI)) }}"
                             class="bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-full p-3 transition">
                             <i class="fas fa-arrow-left"></i>
                         </a>
@@ -111,7 +111,7 @@
                     @endif
 
                     @if ($next)
-                        <a href="{{ route('user.materi.show', encrypt($next->idsubmateri)) }}"
+                        <a href="{{ route('user.materi.show', encrypt($next->IDSUBMATERI)) }}"
                             class="bg-purple-400 hover:bg-purple-500 text-white rounded-full p-3 transition">
                             <i class="fas fa-arrow-right"></i>
                         </a>

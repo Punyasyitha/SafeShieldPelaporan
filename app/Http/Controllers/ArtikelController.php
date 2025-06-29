@@ -24,7 +24,7 @@ class ArtikelController extends Controller
             return view('admin.artikel.list', [
                 'list' => collect(), // kosongkan list
                 'authorize' => (object)['add' => '1'],
-                'url' => url('admin/master/artikel'),
+                'url' => url('admin/artikel'),
                 'error' => 'Gagal fetch data dari API',
             ]);
         }
@@ -37,7 +37,7 @@ class ArtikelController extends Controller
         return view('admin.artikel.list', [
             'list' => $data,
             'authorize' => (object)['add' => '1'],
-            'url' => url('admin/master/artikel'),
+            'url' => url('admin/artikel'),
         ]);
         //dd($data);
     }
@@ -171,7 +171,7 @@ class ArtikelController extends Controller
 
             return view('admin.artikel.show', [
                 'art' => $art,
-                'url' => 'admin/master/artikel',
+                'url' => 'admin/artikel',
             ]);
         } catch (\Exception $e) {
             return redirect()->route('admin.artikel.list')

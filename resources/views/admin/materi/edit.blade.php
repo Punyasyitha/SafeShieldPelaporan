@@ -20,14 +20,14 @@
             </div>
 
             <!-- Form Edit Modul -->
-            <form id="editMateriform" action="{{ route('admin.materi.update', encrypt($materi->idmateri)) }}"
+            <form id="editMateriform" action="{{ route('admin.materi.update', encrypt($mtr->IDMATERI)) }}"
                 method="POST">
                 @csrf
                 @method('PUT')
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">ID Materi</label>
-                    <input type="text" name="idmateri" value="{{ old('idmateri', $materi->idmateri) }}" readonly
+                    <input type="text" name="idmateri" value="{{ old('idmateri', $mtr->IDMATERI) }}" readonly
                         class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg focus:outline-none">
                 </div>
 
@@ -36,30 +36,23 @@
                     <select name="modulid" id="modulSelect" required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                         <option value="">-- Pilih Modul --</option>
-                        @foreach ($modul as $mdl)
-                            <option value="{{ $mdl->idmodul }}" data-deskripsi="{{ $mdl->deskripsi }}"
-                                {{ $materi->modulid == $mdl->idmodul ? 'selected' : '' }}>
-                                {{ $mdl->nama_modul }}
+                        @foreach ($modul as $index => $mdl)
+                            <option value="{{ $mdl->IDMODUL }}"
+                                {{ $mtr->MODULID == $mdl->IDMODUL ? 'selected' : '' }}>
+                                {{ $mdl->NAMA_MODUL }}
                             </option>
                         @endforeach
                     </select>
                 </div>
 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Deskripsi</label>
-                    <textarea id="deskripsiText" class="w-full mt-1 p-2 border border-gray-300 rounded-lg bg-gray-100" readonly>
-                        {{ $modul->firstWhere('idmodul', $materi->modulid)?->deskripsi }}
-                    </textarea>
-                </div>
-
-                <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Nama Kategori</label>
                     <select name="kategoriid" required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
-                        @foreach ($kategori as $ktg)
-                            <option value="{{ $ktg->idkategori }}"
-                                {{ $ktg->idkategori == $materi->kategoriid ? 'selected' : '' }}>
-                                {{ $ktg->nama_kategori }}
+                        @foreach ($kategori as $index => $ktg)
+                            <option value="{{ $ktg->IDKATEGORI }}"
+                                {{ $ktg->IDKATEGORI == $mtr->KATEGORIID ? 'selected' : '' }}>
+                                {{ $ktg->NAMA_KATEGORI }}
                             </option>
                         @endforeach
                     </select>
@@ -67,7 +60,7 @@
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-700">Judul Materi</label>
-                    <input type="text" name="judul_materi" value="{{ old('judul_materi', $materi->judul_materi) }}"
+                    <input type="text" name="judul_materi" value="{{ old('judul_materi', $mtr->JUDUL_MATERI) }}"
                         required
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                 </div>
@@ -76,30 +69,11 @@
                     <label class="block text-sm font-medium text-gray-700">Sumber</label>
                     <input type="text" name="sumber" id="sumber"
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring focus:ring-blue-300 text-blue-600"
-                        value="{{ old('sumber', $materi->sumber) }}" placeholder="Masukkan URL sumber">
+                        value="{{ old('sumber', $mtr->SUMBER) }}" placeholder="Masukkan URL sumber">
                 </div>
 
             </form>
         </div>
     </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const selectModul = document.getElementById('modulSelect');
-            const deskripsiText = document.getElementById('deskripsiText');
-
-            // Update textarea saat pertama kali load (untuk form edit)
-            const selectedOption = selectModul.options[selectModul.selectedIndex];
-            if (selectedOption && selectedOption.dataset.deskripsi) {
-                deskripsiText.value = selectedOption.dataset.deskripsi;
-            }
-
-            // Update textarea saat user memilih modul lain
-            selectModul.addEventListener('change', function() {
-                const selected = this.options[this.selectedIndex];
-                deskripsiText.value = selected.dataset.deskripsi || '';
-            });
-        });
-    </script>
 
 </x-app-layout>

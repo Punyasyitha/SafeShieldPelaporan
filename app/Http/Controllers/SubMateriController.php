@@ -23,7 +23,7 @@ class SubMateriController extends Controller
             return view('admin.submateri.list', [
                 'list' => collect(), // kosongkan list
                 'authorize' => (object)['add' => '1'],
-                'url' => url('admin/master/submateri'),
+                'url' => url('admin/submateri'),
                 'error' => 'Gagal fetch data dari API',
             ]);
         }
@@ -36,7 +36,7 @@ class SubMateriController extends Controller
         return view('admin.submateri.list', [
             'list' => $data,
             'authorize' => (object)['add' => '1'],
-            'url' => url('admin/master/submateri'),
+            'url' => url('admin/submateri'),
         ]);
         //dd($data);
     }
@@ -124,103 +124,186 @@ class SubMateriController extends Controller
     {
         try {
             $idsubmateri = decrypt($id);
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+                'table'  => 'submateri',
+                'data'   => '*', // ambil semua kolom
+                'filter' => [
+                    'IDSUBMATERI' => $idsubmateri
+                ],
+                'limit' => 1 // hanya ambil 1 baris (karena idsubmateri unik)
+            ]);
+
+            if (!$response->successful()) {
+                return redirect()->route('admin.submateri.list')
+                    ->with('error', 'Gagal mengambil data dari API.');
+            }
+
+            $result = $response->json();
+
+            if (empty($result['data']) || count($result['data']) == 0) {
+                return redirect()->route('admin.submateri.list')
+                    ->with('error', 'Data tidak ditemukan di API.');
+            }
+
+            $sbmtr = (object) $result['data'][0];
+
+            return view('admin.submateri.show', [
+                'sbmtr' => $sbmtr,
+                'url' => 'admin/submateri',
+            ]);
         } catch (\Exception $e) {
-            abort(404, 'Sub Materi tidak ditemukan');
+            return redirect()->route('admin.submateri.list')
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        $submateri = DB::table('submateri')
-            ->join('materi', 'submateri.materiid', '=', 'materi.idmateri')
-            ->select('submateri.*', 'materi.judul_materi')
-            ->where('submateri.idsubmateri', $idsubmateri)
-            ->first();
-
-        if (!$submateri) {
-            abort(404, 'Sub Materi tidak ditemukan');
-        }
-
-        return view('admin.submateri.show', compact('submateri'));
     }
 
     public function edit($id)
     {
         try {
             $idsubmateri = decrypt($id); // Jika ID tidak dienkripsi, langsung pakai $id
+
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+                'table'  => 'submateri',
+                'data'   => '*',
+                'filter' => [
+                    'IDSUBMATERI' => $idsubmateri
+                ],
+                'limit' => 1
+            ]);
+
+            if (!$response->successful()) {
+                return redirect()->route('admin.submateri.list')
+                    ->with('error', 'Gagal mengambil data dari API.');
+            }
+
+            $result = $response->json();
+
+            if (empty($result['data']) || count($result['data']) == 0) {
+                return redirect()->route('admin.submateri.list')
+                    ->with('error', 'Data tidak ditemukan di API.');
+            }
+
+            $sbmtr = (object) $result['data'][0];
+
+            // Ambil data penulis
+            $responseMateri = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+                'table' => 'materi',
+                'data'  => '*',
+                'limit' => 100,
+            ]);
+
+            $materi = collect($responseMateri['data'] ?? [])->map(function ($item) {
+                return (object) $item;
+            });
+
+            return view('admin.submateri.edit', [
+                'sbmtr'     => $sbmtr,
+                'materi' => $materi,
+            ]);
         } catch (\Exception $e) {
-            abort(404, 'Sub Materi tidak ditemukan');
+            return redirect()->route('admin.submateri.list')
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        $submateri = DB::table('submateri')
-            ->where('idsubmateri', $idsubmateri) // Pakai hasil dekripsi
-            ->first();
-
-        if (!$submateri) {
-            abort(404, 'Sub Materi tidak ditemukan');
-        }
-
-        $materi = DB::table('materi')->get();
-
-        return view('admin.submateri.edit', compact('submateri', 'materi'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'materiid'        => 'required|exists:materi,idmateri',
-            'judul_submateri' => 'required|string|max:255',
-            'isi'             => 'required|string',
+            'materiid'         => 'required|exists:materi,idmateri',
+            'judul_submateri'  => 'required|string|max:255',
+            'isi'              => 'required|string',
         ]);
 
-        DB::beginTransaction();
         try {
-            $idsubmateri = decrypt($id); // Jika ID dalam URL terenkripsi, dekripsi dulu
+            $idsubmateri = decrypt($id);
 
-            $affectedRows = DB::table('submateri')
-                ->where('idsubmateri', $idsubmateri) // Gunakan hasil dekripsi
-                ->update([
-                    'materiid'        => $request->materiid,
-                    'judul_submateri' => $request->judul_submateri,
-                    'isi'             => $request->isi,
-                    'updated_at'      => now(),
-                ]);
+            $payload = [
+                'table'      => 'submateri',
+                'data'       => [
+                    'MATERIID'        => $request->materiid,
+                    'JUDUL_SUBMATERI' => $request->judul_submateri,
+                    'ISI'             => $request->isi,
+                    'UPDATED_AT'      => now()->format('d-M-y h.i.s A'),
+                ],
+                'conditions' => [
+                    'IDSUBMATERI' => $idsubmateri
+                ],
+                'operators'  => [""]
+            ];
+            // dd($payload);
+            // Kirim ke API eksternal (update)
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept'    => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/update_up2k', $payload);
 
-            DB::commit();
-
-            // Jika tidak ada baris yang diperbarui, kirim pesan warning
-            if ($affectedRows === 0) {
+            if (!$response->successful()) {
                 return redirect()->route('admin.submateri.list')
-                    ->with('warning', 'Tidak ada perubahan data!');
+                    ->with('error', 'Gagal memperbarui data ke API eksternal: ' . $response->body());
+            }
+
+            $result = $response->json();
+            if (!empty($result['data'][0]['status']) && $result['data'][0]['status'] === 'gagal') {
+                return redirect()->route('admin.submateri.list')
+                    ->with('error', 'API Gagal: ' . ($result['data'][0]['deskripsi'] ?? ''));
             }
 
             return redirect()->route('admin.submateri.list')
                 ->with('success', 'Data berhasil diperbarui!');
         } catch (\Exception $e) {
-            DB::rollBack();
             return redirect()->route('admin.submateri.list')
                 ->with('error', 'Gagal memperbarui data: ' . $e->getMessage());
         }
     }
 
+
     public function delete($id)
     {
         try {
-            $idsubmateri = decrypt($id);
+            $idsubmateri= decrypt($id);
         } catch (\Exception $e) {
-            abort(404, 'Materi tidak ditemukan');
-        }
-
-        $submateri = DB::table('submateri')->where('idsubmateri', $idsubmateri)->first();
-        if (!$submateri) {
-            return redirect()->route('admin.submateri.list')
-                ->with('error', 'Materi tidak ditemukan.');
+            abort(404, 'Submateri tidak valid');
         }
 
         try {
-            DB::table('submateri')->where('idsubmateri', $idsubmateri)->delete();
+            // Kirim request DELETE ke API
+            $response = Http::withHeaders([
+                'x-api-key' => env('API_KEY'),
+                'Accept' => 'application/json',
+            ])->post('https://online.mis.pens.ac.id/API_PENS/v1/delete_up2k', [
+                'table' => 'submateri',
+                'conditions' => [
+                    'IDSUBMATERI' => $idsubmateri
+                ],
+                'operators' => [""] // kosongkan karena hanya 1 kondisi
+            ]);
+
+            if (!$response->successful()) {
+                return redirect()->route('admin.submateri.list')
+                    ->with('error', 'Gagal menghapus data dari API eksternal: ' . $response->body());
+            }
+
+            $result = $response->json();
+
+            if (!empty($result['data'][0]['status']) && $result['data'][0]['status'] === 'gagal') {
+                return redirect()->route('admin.submateri.list')
+                    ->with('error', 'API Gagal: ' . ($result['data'][0]['deskripsi'] ?? ''));
+            }
+
             return redirect()->route('admin.submateri.list')
-                ->with('success', 'Materi berhasil dihapus.');
+                ->with('success', 'Data berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('admin.submateri.list')
-                ->with('error', 'Terjadi kesalahan saat menghapus materi: ' . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan saat menghapus data: ' . $e->getMessage());
         }
     }
 }

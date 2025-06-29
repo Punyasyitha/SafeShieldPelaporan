@@ -136,23 +136,6 @@
     </div>
 
     <script>
-        // document.getElementById('refresh-captcha').addEventListener('click', function() {
-        //     fetch('/refresh-captcha')
-        //         .then(response => response.json())
-        //         .then(data => {
-        //             document.querySelector('span img').src = data.captcha;
-        //         })
-        //         .catch(error => console.error('Error refreshing captcha:', error));
-        // });
-
-        // Auto-hide alert setelah 3 detik
-        // setTimeout(() => {
-        //     document.querySelectorAll('.alert').forEach(alert => {
-        //         alert.style.transition = "opacity 0.5s ease-out";
-        //         alert.style.opacity = "0";
-        //         setTimeout(() => alert.remove(), 500); // Hapus elemen setelah efek fade-out selesai
-        //     });
-        // }, 3000);
         setTimeout(() => {
             const modal = document.getElementById('successModal');
             if (modal) modal.remove();

@@ -27,28 +27,24 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($list as $item)
+                    @foreach ($list as $index => $item)
                         <tr class="border-t">
-                            <td class="py-2 px-3">{{ $loop->iteration }}</td>
-                            <td class="py-2 px-3">{{ \Carbon\Carbon::parse($item->tanggal_kejadian)->format('d-m-Y') }}
+                            <td class="py-2 px-3">{{ $index + 1 }}</td>
+                            <td class="py-2 px-3">{{ \Carbon\Carbon::parse($item['TANGGAL_KEJADIAN'] ?? '-')->format('d-m-Y') }}
                             </td>
-                            <td class="py-2 px-3">{{ $item->nama_terlapor }}</td>
-                            <td class="py-2 px-3">{{ $item->tmp_kejadian }}</td>
+                            <td class="py-2 px-3">{{ $item['NAMA_TERLAPOR'] ?? '-' }}</td>
+                            <td class="py-2 px-3">{{ $item['TMP_KEJADIAN'] ?? '-' }}</td>
                             <td class="py-2 px-3">
                                 @php
-                                    $class = $warnaStatus[$item->nama_status ?? '-'] ?? 'bg-gray-200 text-gray-800';
+                                    $class = $warnaStatus[$item['NAMA_STATUS'] ?? '-'] ?? 'bg-gray-200 text-gray-800';
                                 @endphp
                                 <span class="px-2 py-1 rounded-full text-xs font-semibold {{ $class }}">
-                                    {{ $item->nama_status ?? '-' }}
+                                    {{ $item['NAMA_STATUS'] ?? '-' }}
                                 </span>
                             </td>
-                            <td class="py-2 px-3">{{ Str::limit(strip_tags($item->keterangan), 60) }}</td>
+                            <td class="py-2 px-3">{{ Str::limit(strip_tags($item['KETERANGAN'] ?? '-'), 60) }}</td>
                         </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center py-4 text-gray-500">Tidak ada data ditemukan.</td>
-                        </tr>
-                    @endforelse
+                    @endforeach
                 </tbody>
             </table>
         </div>

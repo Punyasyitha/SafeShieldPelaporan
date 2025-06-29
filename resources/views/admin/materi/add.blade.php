@@ -35,16 +35,11 @@
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                         <option value="">Pilih Modul</option>
                         @foreach ($modul as $mdl)
-                            <option value="{{ $mdl->idmodul }}" data-deskripsi="{{ $mdl->deskripsi }}">
-                                {{ $mdl->nama_modul }}
+                            <option value="{{ $mdl['IDMODUL'] }}" data-deskripsi="{{ $mdl['DESKRIPSI'] }}">
+                                {{ $mdl['NAMA_MODUL'] }}
                             </option>
                         @endforeach
                     </select>
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700">Deskripsi</label>
-                    <textarea id="deskripsiText" class="w-full mt-1 p-2 border border-gray-300 rounded-lg bg-gray-100" readonly></textarea>
                 </div>
 
                 <div class="mb-4">
@@ -53,7 +48,7 @@
                         class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-200">
                         <option value="">Pilih Kategori</option>
                         @foreach ($kategori as $ktg)
-                            <option value="{{ $ktg->idkategori }}">{{ $ktg->nama_kategori }}</option>
+                            <option value="{{ $ktg['IDKATEGORI'] }}">{{ $ktg['NAMA_KATEGORI'] }}</option>
                         @endforeach
                     </select>
                 </div>

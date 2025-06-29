@@ -26,13 +26,10 @@
                                     <select name="statusid"
                                         class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
                                         <option value="">-- Semua Status --</option>
-                                        @php
-                                            $statuses = DB::table('mst_sts_pengaduan')->orderBy('idstatus')->get();
-                                        @endphp
                                         @foreach ($statuses as $status)
-                                            <option value="{{ $status->idstatus }}"
-                                                {{ request('statusid') == $status->idstatus ? 'selected' : '' }}>
-                                                {{ $status->nama_status }}
+                                            <option value="{{ $status->IDSTATUS }}"
+                                                {{ request('statusid') == $status->IDSTATUS ? 'selected' : '' }}>
+                                                {{ $status->NAMA_STATUS }}
                                             </option>
                                         @endforeach
                                     </select>

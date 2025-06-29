@@ -18,8 +18,14 @@
             </div>
         @endif
 
-        <div class="w-full overflow-x-auto">
-            <table class="table-fixed text-sm text-left border-gray-200" id="pengaduanUserTable">
+        {{-- Tombol Pencarian --}}
+        <div class="flex flex-col md:flex-row justify-between items-center mb-4 gap-2">
+            <input type="text" id="searchInput" placeholder="Search..."
+                class="border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-purple-200 w-full md:w-1/3">
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="table-fixed w-full text-sm text-left border-gray-200" id="pengaduanUserTable">
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="py-3 px-2 min-w-[50px] truncate">No</th>
@@ -34,31 +40,32 @@
                 </thead>
                 <tbody>
                     @if (count($list) > 0)
-                        @foreach ($list as $item)
+                        @foreach ($list as $index => $item)
                             @php
-                                $status = $item->nama_status ?? '-';
+                                $status = $item['NAMA_STATUS'] ?? '-';
                                 $class = $warnaStatus[$status] ?? 'bg-gray-200 text-gray-800';
                             @endphp
                             <tr class="border-t border-gray-200">
-                                <td class="py-3 px-2">{{ $loop->iteration }}</td>
+                                <td class="py-3 px-2">{{ $index + 1 }}</td>
                                 <td class="py-3 px-2 truncate">
                                     <span class="px-2 py-1 rounded-full text-xs font-semibold {{ $class }}">
                                         {{ $status }}
                                     </span>
                                 </td>
                                 <td class="py-3 px-2 truncate">
-                                    {{ \Carbon\Carbon::parse($item->tanggal_kejadian)->translatedFormat('d F Y') }}
+                                    {{ \Carbon\Carbon::parse($item['TANGGAL_KEJADIAN'] ?? '-')->translatedFormat('d F Y') }}
                                 </td>
-                                <td class="py-3 px-2 truncate">{{ $item->nama_terlapor }}</td>
-                                <td class="py-3 px-2">{{ $item->tmp_kejadian }}</td>
-                                <td class="py-3 px-2 truncate">{{ Str::limit(strip_tags($item->detail), 50) }}</td>
-                                <td class="py-3 px-2">{{ Str::limit(strip_tags($item->keterangan), 50) }}</td>
+                                <td class="py-3 px-2 truncate">{{ $item['NAMA_TERLAPOR'] ?? '-' }}</td>
+                                <td class="py-3 px-2">{{ $item['TMP_KEJADIAN'] ?? '-' }}</td>
+                                <td class="py-3 px-2 truncate">{{ Str::limit(strip_tags($item['DETAIL'] ?? '-'), 50) }}
+                                </td>
+                                <td class="py-3 px-2">{{ Str::limit(strip_tags($item['KETERANGAN'] ?? '-'), 50) }}</td>
                                 <td class="py-3 px-2">
                                     <div class="flex flex-wrap gap-2" x-data="{ open: false }">
                                         @if ($status === 'Verifikasi')
                                             <button
                                                 class="bg-green-500 hover:bg-green-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
-                                                onclick="window.location='{{ route('user.pengaduan.edit', encrypt($item->idpengaduan)) }}'">
+                                                onclick="window.location='{{ route('user.pengaduan.edit', encrypt($item['IDPENGADUAN'])) }}'">
                                                 Edit
                                             </button>
                                         @else
@@ -84,26 +91,26 @@
                                                     </div>
                                                     <div>
                                                         <span class="font-semibold">Tanggal Kejadian:</span>
-                                                        {{ \Carbon\Carbon::parse($item->tanggal_kejadian)->translatedFormat('d F Y') }}
+                                                        {{ \Carbon\Carbon::parse($item['TANGGAL_KEJADIAN'] ?? '-')->translatedFormat('d F Y') }}
                                                     </div>
                                                     <div>
                                                         <span class="font-semibold">Nama Terlapor:</span>
-                                                        {{ $item->nama_terlapor }}
+                                                        {{ $item['NAMA_TERLAPOR'] ?? '-' }}
                                                     </div>
                                                     <div>
                                                         <span class="font-semibold">Tempat Kejadian:</span>
-                                                        {{ $item->tmp_kejadian }}
+                                                        {{ $item['TMP_KEJADIAN'] ?? '-' }}
                                                     </div>
                                                     <div>
                                                         <span class="font-semibold">Detail Kejadian:</span>
                                                         <div class="border p-2 mt-1 rounded bg-gray-50">
-                                                            {!! nl2br(e($item->detail)) !!}
+                                                            {!! nl2br(e($item['DETAIL'] ?? '-')) !!}
                                                         </div>
                                                     </div>
                                                     <div>
                                                         <span class="font-semibold">Keterangan:</span>
                                                         <div class="border p-2 mt-1 rounded bg-gray-50">
-                                                            {!! nl2br(e($item->keterangan)) !!}
+                                                            {!! nl2br(e($item['KETERANGAN'] ?? '-')) !!}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -122,63 +129,109 @@
                     @endif
                 </tbody>
             </table>
-            <!-- Pagination -->
-            <div class="mt-4">
-                {{ $list->links() }}
-            </div>
         </div>
     </div>
 
     <script src="//unpkg.com/alpinejs" defer></script>
-
     @push('styles')
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+        <style>
+            .sort-icon {
+                font-size: 0.75rem;
+                margin-left: 0.25rem;
+                color: #666;
+            }
 
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+            .sort-desc::after {
+                content: " ▼";
+            }
+        </style>
+    @endpush
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const searchInput = document.getElementById('searchInput');
-                const tableRows = document.querySelectorAll('#pengaduanUserTable tbody tr');
+                const table = document.getElementById('pengaduanUserTable');
+                const headers = table.querySelectorAll('th.sort');
+                const tbody = table.querySelector('tbody');
+                let currentSort = {
+                    column: null,
+                    order: 'asc'
+                };
 
+                // Konfirmasi hapus menggunakan SweetAlert2
+                document.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        Swal.fire({
+                            title: "Apakah Anda yakin?",
+                            text: "Data yang dihapus tidak dapat dikembalikan!",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#d33",
+                            cancelButtonColor: "#3085d6",
+                            confirmButtonText: "Ya, hapus!",
+                            cancelButtonText: "Batal",
+                            scrollbarPadding: false
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.closest('form').submit();
+                            }
+                        });
+                    });
+                });
+
+                headers.forEach(header => {
+                    header.addEventListener('click', function() {
+                        const column = header.dataset.sort;
+                        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+                        const isAsc = currentSort.column === column && currentSort.order === 'asc';
+                        currentSort = {
+                            column,
+                            order: isAsc ? 'desc' : 'asc'
+                        };
+
+                        headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                        header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+
+                        rows.sort((a, b) => {
+                            const aText = a.querySelector(
+                                `td:nth-child(${header.cellIndex + 1})`).innerText.trim();
+                            const bText = b.querySelector(
+                                `td:nth-child(${header.cellIndex + 1})`).innerText.trim();
+
+                            return isAsc ?
+                                aText.localeCompare(bText, undefined, {
+                                    numeric: true
+                                }) :
+                                bText.localeCompare(aText, undefined, {
+                                    numeric: true
+                                });
+                        });
+
+                        rows.forEach(row => tbody.appendChild(row));
+                    });
+                });
+
+                // Search
+                const searchInput = document.getElementById('searchInput');
                 searchInput.addEventListener('input', function() {
                     const searchTerm = searchInput.value.toLowerCase();
-
-                    tableRows.forEach(row => {
-                        const rowText = row.textContent.toLowerCase();
-                        const match = rowText.includes(searchTerm);
+                    document.querySelectorAll('#pengaduanUserTable tbody tr').forEach(row => {
+                        const match = row.textContent.toLowerCase().includes(searchTerm);
                         row.style.display = match ? '' : 'none';
                     });
                 });
-            });
-            $(document).ready(function() {
-                $('#pengaduanUserTable').DataTable({
-                    responsive: true,
-                    language: {
-                        lengthMenu: "Tampilkan _MENU_ data",
-                        info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
-                        paginate: {
-                            first: "Pertama",
-                            last: "Terakhir",
-                            next: "Berikutnya",
-                            previous: "Sebelumnya"
-                        },
-                        zeroRecords: "Belum ada laporan pengaduan",
-                        infoEmpty: "Menampilkan 0 data",
-                        infoFiltered: "(difilter dari _MAX_ total data)"
-                    }
-                });
-            });
 
-            // Auto-hide alert
-            setTimeout(() => {
-                document.querySelectorAll('.alert').forEach(alert => {
-                    alert.style.transition = "opacity 0.5s";
-                    alert.style.opacity = "0";
-                    setTimeout(() => alert.remove(), 500);
-                });
-            }, 3000);
+                // Alert fadeout
+                setTimeout(() => {
+                    document.querySelectorAll('.alert').forEach(alert => {
+                        alert.style.transition = 'opacity 0.5s ease-out';
+                        alert.style.opacity = 0;
+                        setTimeout(() => alert.remove(), 500);
+                    });
+                }, 3000);
+            });
         </script>
     @endpush
 </x-app-layout>

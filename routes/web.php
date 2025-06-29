@@ -46,7 +46,6 @@ require __DIR__ . '/auth.php';
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('admin.dashboard');
-    Route::match(['get', 'post'], '/api-fetch', [ApiController::class, 'fetchData'])->name('admin.pages.result');
     // Grup Master dalam Admin
     Route::prefix('master')->name('admin.master.')->group(function () {
         Route::prefix('status')->name('status.')->group(function () {

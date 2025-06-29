@@ -2,81 +2,164 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PengaduanRekapController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $fromDate = request()->input('from_date');
-        $toDate = request()->input('to_date');
-        $statusId = request()->input('statusid');
+        // Ambil parameter filter dari URL query
+        $fromDate = request()->get('from_date');
+        $toDate   = request()->get('to_date');
+        $statusId = request()->get('statusid');
 
-        $query = DB::table('pengaduan')
-            ->join('mst_sts_pengaduan', 'pengaduan.statusid', '=', 'mst_sts_pengaduan.idstatus')
-            ->select('pengaduan.*', 'mst_sts_pengaduan.nama_status');
+        // Ambil data pengaduan dari API
+        $response = Http::withHeaders([
+            'x-api-key' => env('API_KEY'),
+            'Accept'    => 'application/json',
+        ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+            'table' => 'pengaduan',
+            'data'  => '*',
+            'limit' => 1000,
+        ]);
 
-        // Filter berdasarkan tanggal jika ada
-        if ($fromDate && $toDate) {
-            $query->whereBetween('pengaduan.tanggal_kejadian', [$fromDate, $toDate]);
-        }
+        // Ambil data referensi status pengaduan
+        $responseStatus = Http::withHeaders([
+            'x-api-key' => env('API_KEY'),
+            'Accept'    => 'application/json',
+        ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+            'table' => 'mst_sts_pengaduan',
+            'data'  => '*',
+        ]);
 
-        // Filter berdasarkan status jika ada
-        if ($statusId) {
-            $query->where('pengaduan.statusid', $statusId);
-        }
+        $statusList = $statusList = collect($responseStatus['data'] ?? [])->map(fn($item) => (object) $item);
+        $statusMap  = $statusList->pluck('NAMA_STATUS', 'IDSTATUS');
 
-        $data = [
-            'url' => url('admin/report/filter'),
-            'list' => $query->orderBy('pengaduan.idpengaduan', 'asc')->paginate(10),
-            'warnaStatus' => [
-                'Verifikasi' => 'bg-red-200 text-red-800',
-                'Panggilan' => 'bg-orange-200 text-orange-800',
-                'Tinjauan'  => 'bg-yellow-200 text-yellow-800',
-                'Final'     => 'bg-blue-200 text-blue-800',
-                'Selesai'   => 'bg-green-200 text-green-800',
-            ],
+        $warnaStatus = [
+            'Verifikasi' => 'bg-red-200 text-red-800',
+            'Panggilan'  => 'bg-orange-200 text-orange-800',
+            'Tinjauan'   => 'bg-yellow-200 text-yellow-800',
+            'Final'      => 'bg-blue-200 text-blue-800',
+            'Selesai'    => 'bg-green-200 text-green-800',
         ];
 
-        return view('admin.report.pengaduan.filter', $data);
+        // Jika gagal fetch
+        if (!$response->successful()) {
+            return view('admin.report.pengaduan.filter', [
+                'list'        => collect(),
+                'authorize'   => (object)['add' => '1'],
+                'url'         => url('admin/report/filter'),
+                'warnaStatus' => $warnaStatus,
+                'statuses'    => $statusList,
+                'error'       => 'Gagal fetch data dari API',
+            ]);
+        }
+
+        // Olah data dan filter
+        $data = collect($response->json()['data'] ?? [])
+            ->filter(function ($item) use ($fromDate, $toDate, $statusId) {
+                $item = (array) $item;
+                $tanggal = $item['TGL_PENGADUAN'] ?? null;
+
+                if ($fromDate && $tanggal < $fromDate) return false;
+                if ($toDate && $tanggal > $toDate) return false;
+                if ($statusId && $item['STATUSID'] != $statusId) return false;
+
+                return true;
+            })
+            ->map(function ($item) use ($statusMap) {
+                $item = (array) $item;
+                $item['NAMA_STATUS'] = $statusMap[$item['STATUSID']] ?? '-';
+                return $item;
+            })
+            ->sortBy(fn($item) => (int) $item['IDPENGADUAN'] ?? 0)
+            ->values();
+
+        return view('admin.report.pengaduan.filter', [
+            'list'        => $data,
+            'authorize'   => (object)['add' => '1'],
+            'url'         => url('admin/report/filter'),
+            'warnaStatus' => $warnaStatus,
+            'statuses'    => $statusList,
+        ]);
     }
 
     public function result()
     {
         $fromDate = request()->input('from_date');
-        $toDate = request()->input('to_date');
+        $toDate   = request()->input('to_date');
         $statusId = request()->input('statusid');
 
-        $query = DB::table('pengaduan')
-            ->join('mst_sts_pengaduan', 'pengaduan.statusid', '=', 'mst_sts_pengaduan.idstatus')
-            ->select('pengaduan.*', 'mst_sts_pengaduan.nama_status');
+        // Ambil data pengaduan dari API
+        $response = Http::withHeaders([
+            'x-api-key' => env('API_KEY'),
+            'Accept'    => 'application/json',
+        ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+            'table' => 'pengaduan',
+            'data'  => '*',
+            'limit' => 1000,
+        ]);
 
-        // Filter berdasarkan tanggal pengaduan (jika tersedia)
-        if ($fromDate && $toDate) {
-            $query->whereBetween('pengaduan.tanggal_kejadian', [$fromDate, $toDate]);
-        }
+        // Ambil data referensi status pengaduan
+        $responseStatus = Http::withHeaders([
+            'x-api-key' => env('API_KEY'),
+            'Accept'    => 'application/json',
+        ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
+            'table' => 'mst_sts_pengaduan',
+            'data'  => '*',
+        ]);
 
-        // Filter berdasarkan status pengaduan (jika tersedia)
-        if ($statusId) {
-            $query->where('pengaduan.statusid', $statusId);
-        }
+        $statusList = collect($responseStatus['data'] ?? [])->map(fn($item) => (object) $item);
+        $statusMap  = $statusList->pluck('NAMA_STATUS', 'IDSTATUS');
 
-        $data = [
-            'list' => $query->orderBy('pengaduan.idpengaduan', 'asc')->paginate(10),
-            'warnaStatus' => [
-                'Verifikasi' => 'bg-red-200 text-red-800',
-                'Panggilan'  => 'bg-orange-200 text-orange-800',
-                'Tinjauan'   => 'bg-yellow-200 text-yellow-800',
-                'Final'      => 'bg-blue-200 text-blue-800',
-                'Selesai'    => 'bg-green-200 text-green-800',
-            ],
-            // Untuk menjaga nilai input agar tetap terisi setelah submit
-            'from_date' => $fromDate,
-            'to_date'   => $toDate,
-            'statusid'  => $statusId,
+        $warnaStatus = [
+            'Verifikasi' => 'bg-red-200 text-red-800',
+            'Panggilan'  => 'bg-orange-200 text-orange-800',
+            'Tinjauan'   => 'bg-yellow-200 text-yellow-800',
+            'Final'      => 'bg-blue-200 text-blue-800',
+            'Selesai'    => 'bg-green-200 text-green-800',
         ];
 
-        return view('admin.report.pengaduan.result', $data);
+        if (!$response->successful()) {
+            return view('admin.report.pengaduan.result', [
+                'list'        => collect(),
+                'warnaStatus' => $warnaStatus,
+                'statuses'    => $statusList,
+                'from_date'   => $fromDate,
+                'to_date'     => $toDate,
+                'statusid'    => $statusId,
+                'error'       => 'Gagal fetch data dari API',
+            ]);
+        }
+
+        $data = collect($response['data'] ?? [])
+            ->filter(function ($item) use ($fromDate, $toDate, $statusId) {
+                $item = (array) $item;
+                $tanggal = $item['TGL_PENGADUAN'] ?? null;
+
+                if ($fromDate && $tanggal < $fromDate) return false;
+                if ($toDate && $tanggal > $toDate) return false;
+                if ($statusId && $item['STATUSID'] != $statusId) return false;
+
+                return true;
+            })
+            ->map(function ($item) use ($statusMap) {
+                $item = (array) $item;
+                $item['NAMA_STATUS'] = $statusMap[$item['STATUSID']] ?? '-';
+                return $item;
+            })
+            ->sortBy(fn($item) => (int) $item['IDPENGADUAN'] ?? 0)
+            ->values();
+
+        return view('admin.report.pengaduan.result', [
+            'list'        => $data,
+            'warnaStatus' => $warnaStatus,
+            'statuses'    => $statusList,
+            'from_date'   => $fromDate,
+            'to_date'     => $toDate,
+            'statusid'    => $statusId,
+        ]);
     }
 }

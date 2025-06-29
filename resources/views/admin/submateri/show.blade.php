@@ -12,7 +12,7 @@
                     </button>
 
                     <button type="button"
-                        onclick="window.location='{{ route('admin.submateri.edit', encrypt($submateri->idsubmateri)) }}'"
+                        onclick="window.location='{{ route('admin.submateri.edit', encrypt($sbmtr->IDSUBMATERI)) }}'"
                         class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg">
                         <i class="fas fa-pen-to-square me-1"></i><span class="font-weight-bold">Edit</span>
                     </button>
@@ -21,23 +21,23 @@
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">ID Sub Materi</label>
-                <p class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg">{{ $submateri->idsubmateri }}
+                <p class="w-full mt-1 p-2 border border-gray-300 bg-gray-100 rounded-lg">{{ $sbmtr->IDSUBMATERI }}
                 </p>
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Judul Materi</label>
-                <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">{{ $submateri->judul_materi }}</p>
+                <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">{{ $sbmtr->MATERIID }}</p>
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Judul Sub Materi</label>
-                <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">{{ $submateri->judul_submateri }}</p>
+                <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">{{ $sbmtr->JUDUL_SUBMATERI }}</p>
             </div>
 
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700">Isi Materi</label>
-                <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">{{ $submateri->isi }}</p>
+                <p class="w-full mt-1 p-2 border border-gray-300 rounded-lg">{{ $sbmtr->ISI }}</p>
             </div>
 
         </div>

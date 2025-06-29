@@ -29,37 +29,37 @@
         <h1 class="text-xl font-medium font-serif">Edit Pengaduan</h1>
         <hr class="horizontal dark mt-1 mb-2">
 
-        <form method="POST" action="{{ route('user.pengaduan.update', encrypt($pengaduan->idpengaduan)) }}"
+        <form method="POST" action="{{ route('user.pengaduan.update', encrypt($pengaduan->IDPENGADUAN)) }}"
             enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
             <label class="block font-medium text-gray-700 font-sans">Nama Lengkap</label>
             <input type="text" name="nama_pengadu" class="w-full p-2 border rounded-md mb-4"
-                value="{{ old('nama_pengadu', $pengaduan->nama_pengadu) }}" required>
+                value="{{ old('nama_pengadu', $pengaduan->NAMA_PENGADU) }}" required>
 
             <label class="block font-medium text-gray-700 font-sans">No. Telepon</label>
             <input type="text" name="no_telepon" class="w-full p-2 border rounded-md mb-4"
-                value="{{ old('no_telepon', $pengaduan->no_telepon) }}" required>
+                value="{{ old('no_telepon', $pengaduan->NO_TELEPON) }}" required>
 
             <label class="block font-medium text-gray-700 font-sans">Email</label>
             <input type="email" name="email" class="w-full p-2 border rounded-md mb-6"
-                value="{{ old('email', $pengaduan->email) }}">
+                value="{{ old('email', $pengaduan->EMAIL) }}">
 
             <label class="block font-medium text-gray-700 font-sans">Nama Terlapor</label>
             <input type="text" name="nama_terlapor" class="w-full p-2 border rounded-md mb-4"
-                value="{{ old('nama_terlapor', $pengaduan->nama_terlapor) }}" required>
+                value="{{ old('nama_terlapor', $pengaduan->NAMA_TERLAPOR) }}" required>
 
             <label class="block font-medium text-gray-700 font-sans">Tempat Kejadian</label>
             <input type="text" name="tmp_kejadian" class="w-full p-2 border rounded-md mb-6"
-                value="{{ old('tmp_kejadian', $pengaduan->tmp_kejadian) }}" required>
+                value="{{ old('tmp_kejadian', $pengaduan->TMP_KEJADIAN) }}" required>
 
             <label class="block font-medium text-gray-700 font-sans">Tanggal Kejadian</label>
             <input type="date" name="tanggal_kejadian" class="w-full p-2 border rounded-md mb-6"
-                value="{{ old('tanggal_kejadian', $pengaduan->tanggal_kejadian) }}" required>
+                value="{{ \Carbon\Carbon::createFromFormat('d-M-y', $pengaduan->TANGGAL_KEJADIAN)->format('Y-m-d') }}" required>
 
             <label class="block font-medium text-gray-700 font-sans">Detail Pengaduan</label>
-            <textarea name="detail" class="w-full p-3 border rounded mt-2" rows="4" required>{{ old('detail', $pengaduan->detail) }}</textarea>
+            <textarea name="detail" class="w-full p-3 border rounded mt-2" rows="4" required>{{ old('detail', $pengaduan->DETAIL) }}</textarea>
 
             <label class="block font-medium text-gray-700 font-sans mt-4">
                 Bukti Pendukung
@@ -74,10 +74,10 @@
                 File yang diizinkan: pdf, jpg, png, mp4, mp3 (maks 5MB).
             </p>
 
-            @if ($pengaduan->bukti)
+            @if ($pengaduan->BUKTI)
                 <p class="text-sm text-gray-700 mt-2">
                     <strong>Bukti saat ini:</strong>
-                    <a href="{{ asset('storage/' . $pengaduan->bukti) }}" target="_blank"
+                    <a href="{{ asset('storage/' . $pengaduan->BUKTI) }}" target="_blank"
                         class="text-blue-600 underline">Lihat Bukti</a>
                 </p>
             @endif

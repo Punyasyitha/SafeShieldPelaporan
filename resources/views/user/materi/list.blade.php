@@ -17,17 +17,16 @@
                 @endphp
                 <div class="bg-purple-100 border border-purple-200 rounded-lg shadow-md p-4 hover:shadow-lg transition">
                     <div class="mb-3">
-                        <h5 class="text-md font-bold text-gray-800">{{ $modul->nama_modul }}</h5>
-                        <p class="text-sm text-gray-600 mt-1">{{ $modul->deskripsi ?? '-' }}</p>
+                        <h5 class="text-md font-bold text-gray-800">{{ $modul['NAMA_MODUL'] ?? '-' }} | {{ $modul['NAMA_KATEGORI'] ?? '-' }}</h5>
 
                         <div class="mt-2">
                             <ul class="text-sm text-gray-900 space-y-1">
-                                @foreach ($materis as $mtr)
+                                @foreach ($materis as $index => $mtr)
                                     <li>
-                                        <a href="{{ route('user.materi.show', encrypt($mtr->idmateri)) }}"
+                                        <a href="{{ route('user.materi.show', encrypt($mtr['IDMATERI'] ?? '-')) }}"
                                             class="flex items-center text-gray-600  cursor-pointer">
                                             <i class="fas fa-file mr-2"></i>
-                                            {{ $mtr->judul_materi }}
+                                            {{ $mtr['JUDUL_MATERI'] ?? '-' }}
                                         </a>
                                     </li>
                                 @endforeach

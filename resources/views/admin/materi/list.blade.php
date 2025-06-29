@@ -50,10 +50,6 @@
                                 data-sort="nama_modul">
                                 Nama Modul
                             </th>
-                            <th class="py-3 px-2 min-w-[200px] text-left truncate cursor-pointer sort"
-                                data-sort="deskripsi">
-                                Deskripsi
-                            </th>
                             <th class="py-3 px-2 min-w-[180px] text-left truncate cursor-pointer sort"
                                 data-sort="nama_kategori">
                                 Nama Kategori
@@ -72,31 +68,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($list as $mtr)
+                        @foreach ($list as $index => $mtr)
                             <tr class="border-b border-gray-300">
-                                <td class="py-3 px-2 truncate">{{ $loop->iteration }}</td>
-                                <td class="py-3 px-2 truncate">{{ $mtr->idmateri }}</td>
+                                <td class="py-3 px-2 truncate">{{ $index + 1 }}</td>
+                                <td class="py-3 px-2 truncate">{{ $mtr['IDMATERI'] ?? '-' }}</td>
                                 {{-- Menampilkan Nama Mdoul atau ID-nya jika nama tidak ada --}}
                                 <td class="py-3 px-2 truncate">
-                                    {{ $mtr->nama_modul ?? '-' }}
+                                    {{ $mtr['MODULID'] ?? '-' }}
                                 </td>
                                 <td class="py-3 px-2 truncate">
-                                    {{ $mtr->deskripsi ?? '-' }}
+                                    {{ $mtr['KATEGORIID'] ?? '-' }}
                                 </td>
-                                <td class="py-3 px-2 truncate">
-                                    {{ $mtr->nama_kategori ?? '-' }}
-                                </td>
-                                <td class="py-3 px-2 truncate">{{ $mtr->judul_materi }}</td>
-                                <td class="py-3 px-2 truncate"><a href="{{ $mtr->sumber }}"
+                                <td class="py-3 px-2 truncate">{{ $mtr['JUDUL_MATERI'] ?? '-' }}</td>
+                                <td class="py-3 px-2 truncate"><a href="{{ $mtr['SUMBER'] ?? '-' }}"
                                         class="text-blue-600 hover:underline" target="_blank">
-                                        {{ $mtr->sumber }}
+                                        {{ $mtr['SUMBER'] ?? '-' }}
                                     </a></td>
                                 <td class="py-3 px-2 flex flex-wrap gap-2">
                                     {{-- Tombol Lihat --}}
                                     <button
                                         class="bg-blue-500 hover:bg-blue-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
                                         title="Lihat"
-                                        onclick="window.location='{{ route('admin.materi.show', encrypt($mtr->idmateri)) }}'">
+                                        onclick="window.location='{{ route('admin.materi.show', encrypt($mtr['IDMATERI'])) }}'">
                                         <i class="fas fa-eye"></i>
                                     </button>
 
@@ -104,18 +97,18 @@
                                     <button
                                         class="bg-green-500 hover:bg-green-600 text-white inline-flex py-1 px-3 rounded items-center gap-2"
                                         title="Edit"
-                                        onclick="window.location='{{ route('admin.materi.edit', encrypt($mtr->idmateri)) }}'">
+                                        onclick="window.location='{{ route('admin.materi.edit', encrypt($mtr['IDMATERI'])) }}'">
                                         <i class="fas fa-edit"></i>
                                     </button>
 
                                     {{-- Tombol Hapus --}}
-                                    <form action="{{ route('admin.materi.delete', encrypt($mtr->idmateri)) }}"
+                                    <form action="{{ route('admin.materi.delete', encrypt($mtr['IDMATERI'])) }}"
                                         method="POST" class="delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button"
                                             class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded delete-btn inline-flex items-center gap-2"
-                                            title="Hapus" data-id="{{ encrypt($mtr->idmateri) }}">
+                                            title="Hapus" data-id="{{ encrypt($mtr['IDMATERI']) }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -126,47 +119,35 @@
                     </tbody>
                 </table>
             </div>
-            <!-- Pagination -->
-            <div class="mt-4">
-                {{ $list->links() }}
-            </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @push('styles')
-        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
-    @endpush
-    <style>
-        div.dataTables_filter {
-            display: none;
-        }
-    </style>
+        <style>
+            .sort-icon {
+                font-size: 0.75rem;
+                margin-left: 0.25rem;
+                color: #666;
+            }
 
-    @push('scripts')
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-        <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+            .sort-desc::after {
+                content: " ▼";
+            }
+        </style>
     @endpush
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @push('scripts')
         <script>
-            // Searching
             document.addEventListener('DOMContentLoaded', function() {
-                const searchInput = document.getElementById('searchInput');
-                const tableRows = document.querySelectorAll('#materiTable tbody tr');
+                const table = document.getElementById('materiTable');
+                const headers = table.querySelectorAll('th.sort');
+                const tbody = table.querySelector('tbody');
+                let currentSort = {
+                    column: null,
+                    order: 'asc'
+                };
 
-                searchInput.addEventListener('input', function() {
-                    const searchTerm = searchInput.value.toLowerCase();
-
-                    tableRows.forEach(row => {
-                        const rowText = row.textContent.toLowerCase();
-                        const match = rowText.includes(searchTerm);
-                        row.style.display = match ? '' : 'none';
-                    });
-                });
-            });
-
-            $(document).ready(function() {
                 // Konfirmasi hapus menggunakan SweetAlert2
                 document.querySelectorAll('.delete-btn').forEach(button => {
                     button.addEventListener('click', function() {
@@ -188,11 +169,54 @@
                     });
                 });
 
-                // Auto-hide alert setelah 3 detik
+                headers.forEach(header => {
+                    header.addEventListener('click', function() {
+                        const column = header.dataset.sort;
+                        const rows = Array.from(tbody.querySelectorAll('tr'));
+
+                        const isAsc = currentSort.column === column && currentSort.order === 'asc';
+                        currentSort = {
+                            column,
+                            order: isAsc ? 'desc' : 'asc'
+                        };
+
+                        headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+                        header.classList.add(isAsc ? 'sort-desc' : 'sort-asc');
+
+                        rows.sort((a, b) => {
+                            const aText = a.querySelector(
+                                `td:nth-child(${header.cellIndex + 1})`).innerText.trim();
+                            const bText = b.querySelector(
+                                `td:nth-child(${header.cellIndex + 1})`).innerText.trim();
+
+                            return isAsc ?
+                                aText.localeCompare(bText, undefined, {
+                                    numeric: true
+                                }) :
+                                bText.localeCompare(aText, undefined, {
+                                    numeric: true
+                                });
+                        });
+
+                        rows.forEach(row => tbody.appendChild(row));
+                    });
+                });
+
+                // Search
+                const searchInput = document.getElementById('searchInput');
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = searchInput.value.toLowerCase();
+                    document.querySelectorAll('#materiTable tbody tr').forEach(row => {
+                        const match = row.textContent.toLowerCase().includes(searchTerm);
+                        row.style.display = match ? '' : 'none';
+                    });
+                });
+
+                // Alert fadeout
                 setTimeout(() => {
                     document.querySelectorAll('.alert').forEach(alert => {
-                        alert.style.transition = "opacity 0.5s ease-out";
-                        alert.style.opacity = "0";
+                        alert.style.transition = 'opacity 0.5s ease-out';
+                        alert.style.opacity = 0;
                         setTimeout(() => alert.remove(), 500);
                     });
                 }, 3000);

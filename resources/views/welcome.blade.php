@@ -1,66 +1,3 @@
-{{-- <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title>Laravel</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Styles / Scripts -->
-        @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-            @vite(['resources/css/app.css', 'resources/js/app.js'])
-        @else
-        @endif
-    </head>
-    <body class="font-sans antialiased dark:bg-black dark:text-white/50">
-        <div class="bg-gray-50 text-black/50 dark:bg-black dark:text-white/50">
-            <div class="relative min-h-screen flex flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
-                <div class="relative w-full max-w-2xl px-6 lg:max-w-7xl">
-                    <header class="grid grid-cols-2 items-center gap-2 py-10 lg:grid-cols-3">
-                        @if (Route::has('login'))
-                            <nav class="-mx-3 flex flex-1 justify-end">
-                                @auth
-                                    <a
-                                        href="{{ url('/dashboard') }}"
-                                        class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white justify-center"
-                                    >
-                                        Dashboard
-                                    </a>
-                                @else
-                                    <a
-                                        href="{{ route('login') }}"
-                                        class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white justify-center"
-                                    >
-                                        Log in
-                                    </a>
-
-                                    @if (Route::has('register'))
-                                        <a
-                                            href="{{ route('register') }}"
-                                            class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20] dark:text-white dark:hover:text-white/80 dark:focus-visible:ring-white justify-center"
-                                        >
-                                            Register
-                                        </a>
-                                    @endif
-                                @endauth
-                            </nav>
-                        @endif
-                    </header>
-
-                    <main>
-                        <h1 class="text-4xl font-bold text-black drop-shadow-lg text-center">
-                            Selamat Datang di SafeShield
-                        </h1>
-                    </main>
-                </div>
-            </div>
-        </div>
-    </body>
-</html> --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -104,55 +41,21 @@
             -webkit-mask-composite: xor;
             mask-composite: exclude;
             box-sizing: border-box;
-            transform: rotate(183deg); /* Sudut kemiringan */
+            transform: rotate(183deg);
+            /* Sudut kemiringan */
             transform-origin: center center;
         }
     </style>
 
 </head>
 
-{{-- <div class="h-screen flex-1 flex flex-col justify-center items-center text-center px-4 py-20 relative">
-        <!-- Elemen dekorasi kiri bawah diganti gambar -->
-        <img src="{{ asset('/assets/images/Vector.png') }}" alt="Dekorasi"
-            class="absolute bottom-0 left-0 object-contain -z-10 select-none pointer-events-none">
-
-        <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight max-w-4xl">
-            Ciptakan Kesadaran Diri <br>
-            tentang Pentingnya <br>
-            Sikap <span class="highlight-circle">Anti Pelecehan</span> <br>
-            dan Kekerasan Seksual
-        </h1>
-
-        <!-- Tombol login -->
-        <div class="mt-10">
-            @if (Route::has('login'))
-                @auth
-                    <a href="{{ url('/dashboard') }}"
-                        class="bg-gradient-to-r from-fuchsia-600 to-purple-500 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:scale-105 transition">
-                        Dashboard
-                    </a>
-                @else
-                    <a href="{{ route('login') }}"
-                        class="bg-gradient-to-r from-fuchsia-600 to-purple-500 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:scale-105 transition">
-                        Login
-                    </a>
-
-                    @if (Route::has('register'))
-                        <p class="mt-3 text-sm text-gray-600">Apabila belum memiliki akun, silahkan
-                            <a href="{{ route('register') }}" class="text-blue-600 font-semibold hover:underline">Register
-                            </a>
-                        </p>
-                    @endif
-                @endauth
-            @endif
-        </div>
-    </div> --}}
-
 <body class="font-sans antialiased bg-gradient-to-br from-[#f8f4ff] to-white min-h-screen flex flex-col">
     <!-- Navbar -->
     <nav class="backdrop-blur-md bg-white/30 sticky top-0 z-50 px-8 py-4 flex justify-between items-center shadow-md">
-        <div class="text-gray-800 text-xl font-bold tracking-wider">
-            SAFE<span class="text-purple-500 font-bold">SHIELD</span>
+        <div class="text-gray-800 text-xl font-bold tracking-wider flex items-center space-x-2">
+            <span>SAFE</span>
+            <span class="text-purple-500 font-bold">SHIELD</span>
+            <img src="{{ asset('assets/images/logoPENS.png') }}" alt="logoPENS" class="w-8 h-8 object-contain" />
         </div>
 
         <!-- Desktop Menu -->

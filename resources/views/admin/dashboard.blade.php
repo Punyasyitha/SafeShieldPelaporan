@@ -13,26 +13,30 @@
             @php
                 $stats = [
                     [
-                        'label' => 'Status Baru',
-                        'value' => $statusBaru,
+                        'label' => 'Total Status',
+                        'value' => $statusTotal,
+                        'persentase' => 100,
                         'icon' => 'fas fa-check-circle',
                         'color' => 'from-green-700 via-green-400 to-yellow-200',
                     ],
                     [
                         'label' => 'Modul Baru',
                         'value' => $modulBaru,
+                        'persentase' => $persentaseModul ?? 0,
                         'icon' => 'fas fa-server',
                         'color' => 'from-blue-900 via-blue-400 to-gray-300',
                     ],
                     [
                         'label' => 'Kategori Baru',
                         'value' => $kategoriBaru,
+                        'persentase' => $persentaseKategori ?? 0,
                         'icon' => 'fas fa-layer-group',
                         'color' => 'from-yellow-900 via-yellow-400 to-red-500',
                     ],
                     [
                         'label' => 'Penulis Baru',
                         'value' => $penulisBaru,
+                        'persentase' => $persentasePenulis ?? 0,
                         'icon' => 'fas fa-pen-to-square',
                         'color' => 'from-pink-700 via-blue-400 to-pink-300',
                     ],
@@ -45,8 +49,10 @@
                         <div>
                             <p class="text-xs text-gray-500 uppercase font-bold">{{ $stat['label'] }}</p>
                             <h5 class="text-xl font-bold text-gray-800">+{{ $stat['value'] }}</h5>
-                            <p class="text-xs text-green-600 font-semibold">+0% <span class="text-gray-500">bulan
-                                    ini</span></p>
+                            <p class="text-xs text-green-600 font-semibold">
+                                +{{ $stat['persentase'] ?? 0 }}%
+                                <span class="text-gray-500">bulan ini</span>
+                            </p>
                         </div>
                         <div class="bg-gradient-to-tr {{ $stat['color'] }} p-3 rounded-full">
                             <i class="{{ $stat['icon'] }} text-white"></i>
@@ -87,7 +93,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
 
         <!-- Kurs dan Progress -->
