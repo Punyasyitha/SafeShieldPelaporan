@@ -52,10 +52,10 @@
 <body class="font-sans antialiased bg-gradient-to-br from-[#f8f4ff] to-white min-h-screen flex flex-col">
     <!-- Navbar -->
     <nav class="backdrop-blur-md bg-white/30 sticky top-0 z-50 px-8 py-4 flex justify-between items-center shadow-md">
-        <div class="text-gray-800 text-xl font-bold tracking-wider flex items-center space-x-2">
+        <div class="text-gray-800 text-xl font-bold tracking-wider flex items-center">
             <span>SAFE</span>
             <span class="text-purple-500 font-bold">SHIELD</span>
-            <img src="{{ asset('assets/images/logoPENS.png') }}" alt="logoPENS" class="w-8 h-8 object-contain" />
+            <img src="{{ asset('assets/images/logoPENS.png') }}" alt="logoPENS" class="w-8 h-8 object-contain ml-3" />
         </div>
 
         <!-- Desktop Menu -->
@@ -112,7 +112,12 @@
         <div class="mt-10">
             @if (Route::has('login'))
                 @auth
-                    <a href="{{ url('/dashboard') }}"
+                    @php
+                        $role = auth()->user()->role;
+                        $dashboardUrl = $role === 'admin' ? route('admin.dashboard') : route('user.dashboard');
+                    @endphp
+
+                    <a href="{{ $dashboardUrl }}"
                         class="bg-gradient-to-r from-fuchsia-600 to-purple-500 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:scale-105 transition">
                         Dashboard
                     </a>
@@ -129,6 +134,7 @@
                     @endif
                 @endauth
             @endif
+
         </div>
     </section>
 
