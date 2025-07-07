@@ -297,10 +297,10 @@
                 PENS,
                 Sukolilo,
                 Surabaya</p>
-            <p class="text-sm text-gray-600"><a href="mailto:safeshield25@gmail.com"
+            <p class="text-sm text-gray-600"><a href="ppk@div.pens.ac.id"
                     class="text-blue-600 hover:underline"><i
-                        class="fas fa-envelope mr-2 text-black"></i>safeshield25@gmail.com</a></p>
-            <p class="text-sm text-gray-600"><i class="fas fa-phone mr-2 text-black"></i>0812-1675-6463</p>
+                        class="fas fa-envelope mr-2 text-black"></i>ppk@div.pens.ac.id</a></p>
+            <p class="text-sm text-gray-600"><i class="fas fa-phone mr-2 text-black"></i>031 - 5947280</p>
         </div>
     </section>
 
