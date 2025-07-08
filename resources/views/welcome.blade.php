@@ -126,12 +126,12 @@
                         class="bg-gradient-to-r from-fuchsia-600 to-purple-500 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:scale-105 transition">
                         Login
                     </a>
-                    @if (Route::has('register'))
+                    {{-- @if (Route::has('register'))
                         <p class="mt-3 text-sm text-gray-600">Apabila belum memiliki akun, silahkan
                             <a href="{{ route('register') }}"
                                 class="text-blue-600 font-semibold hover:underline">Register</a>
                         </p>
-                    @endif
+                    @endif --}}
                 @endauth
             @endif
 

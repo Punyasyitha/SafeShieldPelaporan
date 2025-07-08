@@ -26,6 +26,9 @@ class UserController extends BaseController
         ])->post('https://online.mis.pens.ac.id/API_PENS/v1/read_up2k', [
             'table' => 'artikel',
             'data'  => '*',
+            'filter' => [
+                'status' => 'published',
+            ],
             'limit' => 100,
         ]);
 
