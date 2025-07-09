@@ -81,8 +81,8 @@ class MateriController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'modulid'       => 'required|exists:mst_modul,idmodul',
-            'kategoriid'    => 'required|exists:mst_kategori,idkategori',
+            'modulid'       => 'required',
+            'kategoriid'    => 'required',
             'judul_materi'  => 'required|string|max:255',
             'sumber'        => 'required|url',
         ]);
@@ -241,8 +241,8 @@ class MateriController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'modulid'       => 'required|exists:mst_modul,idmodul',
-            'kategoriid'    => 'required|exists:mst_kategori,idkategori',
+            'modulid'       => 'required',
+            'kategoriid'    => 'required',
             'judul_materi'  => 'required|string|max:255',
             'sumber'        => 'required|url',
         ]);

@@ -208,7 +208,7 @@ class PengaduanController extends Controller
     {
         // Validasi input
         $request->validate([
-            'statusid'   => 'required|integer|exists:mst_sts_pengaduan,idstatus',
+            'statusid'   => 'required|integer',
             'keterangan' => 'nullable|string',
         ]);
 

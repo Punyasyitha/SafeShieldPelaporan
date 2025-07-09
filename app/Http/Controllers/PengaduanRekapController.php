@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PengaduanRekapController extends Controller
 {
@@ -61,14 +62,24 @@ class PengaduanRekapController extends Controller
         $data = collect($response->json()['data'] ?? [])
             ->filter(function ($item) use ($fromDate, $toDate, $statusId) {
                 $item = (array) $item;
-                $tanggal = $item['TGL_PENGADUAN'] ?? null;
+                $tanggal = $item['TANGGAL_KEJADIAN'] ?? null;
 
-                if ($fromDate && $tanggal < $fromDate) return false;
-                if ($toDate && $tanggal > $toDate) return false;
+                try {
+                    // Konversi dari format 30-JUN-25 ke format standar Y-m-d
+                    $tglItem = Carbon::createFromFormat('d-M-y', $tanggal)->format('Y-m-d');
+                    $tglFrom = $fromDate ? Carbon::parse($fromDate)->format('Y-m-d') : null;
+                    $tglTo   = $toDate ? Carbon::parse($toDate)->format('Y-m-d') : null;
+                } catch (\Exception $e) {
+                    return false;
+                }
+
+                if ($tglFrom && $tglItem < $tglFrom) return false;
+                if ($tglTo && $tglItem > $tglTo) return false;
                 if ($statusId && $item['STATUSID'] != $statusId) return false;
 
                 return true;
             })
+
             ->map(function ($item) use ($statusMap) {
                 $item = (array) $item;
                 $item['NAMA_STATUS'] = $statusMap[$item['STATUSID']] ?? '-';
@@ -137,14 +148,23 @@ class PengaduanRekapController extends Controller
         $data = collect($response['data'] ?? [])
             ->filter(function ($item) use ($fromDate, $toDate, $statusId) {
                 $item = (array) $item;
-                $tanggal = $item['TGL_PENGADUAN'] ?? null;
+                $tanggal = $item['TANGGAL_KEJADIAN'] ?? null;
 
-                if ($fromDate && $tanggal < $fromDate) return false;
-                if ($toDate && $tanggal > $toDate) return false;
+                try {
+                    $tglItem = \Carbon\Carbon::createFromFormat('d-M-y', $tanggal)->format('Y-m-d');
+                    $tglFrom = $fromDate ? \Carbon\Carbon::parse($fromDate)->format('Y-m-d') : null;
+                    $tglTo   = $toDate ? \Carbon\Carbon::parse($toDate)->format('Y-m-d') : null;
+                } catch (\Exception $e) {
+                    return false;
+                }
+
+                if ($tglFrom && $tglItem < $tglFrom) return false;
+                if ($tglTo && $tglItem > $tglTo) return false;
                 if ($statusId && $item['STATUSID'] != $statusId) return false;
 
                 return true;
             })
+
             ->map(function ($item) use ($statusMap) {
                 $item = (array) $item;
                 $item['NAMA_STATUS'] = $statusMap[$item['STATUSID']] ?? '-';

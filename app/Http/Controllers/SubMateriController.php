@@ -72,8 +72,9 @@ class SubMateriController extends Controller
 
     public function store(Request $request)
     {
+        // dd('ID yang dikirim:', $request->materiid);
         $request->validate([
-            'materiid'      => 'required|exists:materi,idmateri',
+            'materiid'      => 'required',
             'judul_submateri'  => 'required|string|max:255',
             'isi'              => 'required|string',
         ]);
@@ -95,11 +96,15 @@ class SubMateriController extends Controller
                 ]
             ];
 
+            // dd($payload);
+
             // Kirim ke API eksternal
             $response = Http::withHeaders([
                 'x-api-key' => env('API_KEY'),
                 'Accept'    => 'application/json',
             ])->post('https://online.mis.pens.ac.id/API_PENS/v1/insert_up2k', $payload);
+
+            //dd('Response dari API:', $response->body(), $response->json());
 
             if (!$response->successful()) {
                 return redirect()->route('admin.submateri.list')
@@ -218,7 +223,7 @@ class SubMateriController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'materiid'         => 'required|exists:materi,idmateri',
+            'materiid'         => 'required',
             'judul_submateri'  => 'required|string|max:255',
             'isi'              => 'required|string',
         ]);
@@ -269,7 +274,7 @@ class SubMateriController extends Controller
     public function delete($id)
     {
         try {
-            $idsubmateri= decrypt($id);
+            $idsubmateri = decrypt($id);
         } catch (\Exception $e) {
             abort(404, 'Submateri tidak valid');
         }

@@ -74,7 +74,7 @@ class ArtikelController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'penulisid'      => 'required|exists:mst_penulis,idpenulis',
+            'penulisid'      => 'required',
             'judul_artikel'  => 'required|string|max:255',
             'isi_artikel'    => 'required|string',
             'tanggal_rilis'  => 'required|date',
@@ -237,7 +237,7 @@ class ArtikelController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'penulisid'      => 'required|exists:mst_penulis,idpenulis',
+            'penulisid'      => 'required',
             'judul_artikel'  => 'required|string|max:255',
             'isi_artikel'    => 'required|string',
             'tanggal_rilis'  => 'required|date',

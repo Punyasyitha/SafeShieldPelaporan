@@ -30,7 +30,17 @@
                     @foreach ($list as $index => $item)
                         <tr class="border-t">
                             <td class="py-2 px-3">{{ $index + 1 }}</td>
-                            <td class="py-2 px-3">{{ \Carbon\Carbon::parse($item['TANGGAL_KEJADIAN'] ?? '-')->format('d-m-Y') }}
+                            <td class="py-2 px-3">@php
+                                try {
+                                    $tanggal = $item['TANGGAL_KEJADIAN'] ?? null;
+                                    $formattedDate = $tanggal
+                                        ? \Carbon\Carbon::createFromFormat('d-M-y', $tanggal)->format('d-m-Y')
+                                        : '-';
+                                } catch (\Exception $e) {
+                                    $formattedDate = '-';
+                                }
+                            @endphp
+                                {{ $formattedDate }}
                             </td>
                             <td class="py-2 px-3">{{ $item['NAMA_TERLAPOR'] ?? '-' }}</td>
                             <td class="py-2 px-3">{{ $item['TMP_KEJADIAN'] ?? '-' }}</td>
