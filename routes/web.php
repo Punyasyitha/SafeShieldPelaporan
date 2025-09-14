@@ -32,6 +32,18 @@ Route::get('/register', [RegisteredUserController::class, 'create'])
 Route::post('/register', [RegisteredUserController::class, 'store'])
     ->middleware('guest');
 
+Route::get('/regulasi', function () {
+    $path = storage_path('app/public/regulasi/Salinan-Permendikbudristek-Nomor-55-Tahun-2024-PPKPT.pdf');
+    abort_unless(file_exists($path), 404);
+
+    return response()->file($path, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="Salinan-Permendikbudristek-Nomor-55-Tahun-2024-PPKPT.pdf"',
+    ]);
+})->name('regulasi');
+Route::view('/edukasi-kekerasan', 'edukasi');
+Route::view('/tata-cara-pengaduan', 'tatacara');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

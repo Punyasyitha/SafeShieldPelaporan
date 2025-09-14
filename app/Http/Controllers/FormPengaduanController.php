@@ -86,17 +86,23 @@ class FormPengaduanController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nama_pengadu'         => 'required|string|max:100',
-            'no_telepon'           => 'required|string|max:20',
-            'email'                => 'nullable|email',
-            'nama_terlapor'        => 'required|string|max:100',
-            'tmp_kejadian'         => 'required|string|max:300',
-            'tanggal_kejadian'     => 'required|date',
-            'detail'               => 'required|string',
-            'bukti'                => 'nullable|file|mimes:jpg,jpeg,png,pdf,mp4,mp3,wav|max:5120',
-            'g-recaptcha-response' => 'required|captcha',
-        ]);
+        $request->validate(
+            [
+                'nama_pengadu'         => 'required|string|max:100',
+                'no_telepon'           => 'required|string|max:20',
+                'email'                => 'nullable|email',
+                'nama_terlapor'        => 'required|string|max:100',
+                'tmp_kejadian'         => 'required|string|max:300',
+                'tanggal_kejadian'     => 'required|date',
+                'detail'               => 'required|string',
+                'bukti'                => 'nullable|file|mimes:jpg,jpeg,png,pdf,mp4,mp3,wav|max:5120',
+            ],
+            [
+                'bukti.max'      => 'Ukuran file maksimal 5 MB.',
+                'bukti.mimes'    => 'Format berkas harus: JPG/JPEG, PNG, PDF, MP4, MP3, atau WAV.',
+                'bukti.uploaded' => 'File gagal diunggah (kemungkinan melebihi batas server). Pastikan ukuran ≤ 5 MB.',
+            ]
+        );
 
         try {
             $buktiPath = null;

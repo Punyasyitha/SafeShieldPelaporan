@@ -9,10 +9,10 @@
         @endif --}}
         @if (session('success'))
             <!-- Modal Background -->
-            <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <!-- Modal Box -->
+            <div id="successModal" class="fixed inset-0 z-[2000] bg-black/50 flex items-center justify-center" x-data
+                x-init="setTimeout(() => $el.remove(), 4000)"> {{-- auto-close 4 detik --}}
                 <div class="bg-white rounded-lg p-6 shadow-lg max-w-sm w-full relative">
-                    <button onclick="document.getElementById('successModal').remove()"
+                    <button @click="$root.remove()"
                         class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
                     <div class="flex items-center gap-3">
                         <i class="fas fa-check-circle text-green-500 text-2xl"></i>
@@ -53,36 +53,38 @@
             Lengkapi identitas diri Anda untuk mempermudah verifikasi data atas pengaduan Anda.
         </p>
 
-        <form method="POST" action="{{ route('user.pengaduan.store') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route('user.pengaduan.store') }}" enctype="multipart/form-data"
+            x-data="{ sending: false }" @submit="if ($el.checkValidity()) { sending = true }">
             @csrf
 
             <label class="block font-medium text-gray-700 font-sans">Nama Lengkap</label>
             <input type="text" name="nama_pengadu" class="w-full p-2 border rounded-md mb-4"
-                placeholder="Nama Lengkap Anda" required>
+                value="{{ old('nama_pengadu') }}" placeholder="Nama Lengkap Anda" required>
 
             <label class="block font-medium text-gray-700 font-sans">No. Telepon</label>
             <input type="text" name="no_telepon" class="w-full p-2 border rounded-md mb-4"
-                placeholder="08xx-xxxx-xxxx" required>
+                value="{{ old('no_telepon') }}" placeholder="08xx-xxxx-xxxx" required>
 
             <label class="block font-medium text-gray-700 font-sans">Email</label>
-            <input type="email" name="email" class="w-full p-2 border rounded-md mb-6" placeholder="@gmail.com">
+            <input type="email" name="email" class="w-full p-2 border rounded-md mb-6" value="{{ old('email') }}">
 
             <h1 class="text-xl font-medium font-serif">2. Detail Pengaduan</h1>
             <p class="text-gray-600 mb-4 font-sans">Sampaikan laporan Anda secara detail dan jelas.</p>
 
             <label class="block font-medium text-gray-700 font-sans">Nama Terlapor</label>
             <input type="text" name="nama_terlapor" class="w-full p-2 border rounded-md mb-4"
-                placeholder="Nama Pihak yang Dilaporkan" required>
+                value="{{ old('nama_terlapor') }}" placeholder="Nama Pihak yang Dilaporkan" required>
 
             <label class="block font-medium text-gray-700 font-sans">Tempat Kejadian</label>
             <input type="text" name="tmp_kejadian" class="w-full p-2 border rounded-md mb-6"
-                placeholder="Tempat Kejadian Perkara" required>
+                value="{{ old('tmp_kejadian') }}" placeholder="Tempat Kejadian Perkara" required>
 
             <label class="block font-medium text-gray-700 font-sans">Tanggal Kejadian</label>
-            <input type="date" name="tanggal_kejadian" class="w-full p-2 border rounded-md mb-6" required>
+            <input type="date" name="tanggal_kejadian" class="w-full p-2 border rounded-md mb-6"
+                value="{{ old('tanggal_kejadian') }}" required>
 
             <label class="block font-medium text-gray-700 font-sans">Detail Pengaduan</label>
-            <textarea name="detail" class="w-full p-3 border rounded mt-2" rows="4" placeholder="Detail Pengaduan" required></textarea>
+            <textarea name="detail" class="w-full p-3 border rounded mt-2" rows="4" placeholder="Detail Pengaduan" required>{{ old('detail') }}</textarea>
 
             <label class="block font-medium text-gray-700 font-sans">
                 Bukti Pendukung
@@ -92,7 +94,14 @@
                 </button>
             </label>
 
-            <input type="file" name="bukti" class="block mt-2">
+            <input id="bukti" name="bukti" type="file"
+                class="mt-2 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm file:mr-4 file:rounded-md file:border-0 file:bg-fuchsia-600 file:px-4 file:py-2 file:text-white hover:file:bg-fuchsia-700 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/50"
+                accept=".png,.jpg,.jpeg,.pdf,.mp4,.mp3,.wav, image/png,image/jpeg,application/pdf,video/mp4, audio/mpeg,audio/wav,audio/x-wav,audio/wave">
+
+            {{-- Tampilkan error khusus field bukti --}}
+            @error('bukti')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
             <p class="text-sm text-gray-600">
                 File yang diizinkan: pdf, jpg, png, mp4, mp3 (maks 5MB).
             </p>
@@ -131,7 +140,36 @@
                     placeholder="Masukkan kode di atas" required>
             </div> --}}
 
-            <button class="mt-5 bg-purple-600 text-white py-2 px-5 rounded">Kirim Pengaduan</button>
+            {{-- <button class="mt-5 bg-purple-600 text-white py-2 px-5 rounded">Kirim Pengaduan</button> --}}
+            {{-- Tombol submit + status --}}
+            <button type="submit" :disabled="sending"
+                class="mt-5 inline-flex items-center gap-2 rounded bg-fuchsia-600 px-5 py-2 text-white
+                     hover:bg-fuchsia-700 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/50
+                     disabled:opacity-60 disabled:cursor-not-allowed transition">
+                <svg x-cloak x-show="sending" class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none"
+                    aria-hidden="true">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                        stroke-width="4" />
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+                <span x-show="!sending">Kirim Pengaduan</span>
+                <span x-cloak x-show="sending">Mengirim…</span>
+            </button>
+
+            {{-- Overlay opsional --}}
+            <div x-cloak x-show="sending"
+                class="fixed inset-0 z-[60] bg-black/30 backdrop-blur-sm grid place-items-center" aria-live="polite">
+                <div class="rounded-xl bg-white px-5 py-3 shadow ring-1 ring-black/10 text-gray-700">
+                    <div class="flex items-center gap-3">
+                        <svg class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                stroke-width="4" />
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                        </svg>
+                        <span>Data sedang dikirim. Mohon tunggu…</span>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
 
