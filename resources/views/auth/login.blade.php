@@ -1,139 +1,72 @@
+{{-- resources/views/auth/login.blade.php --}}
 <x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+  <h1 class="text-2xl font-extrabold tracking-tight">Masuk ke SafeShield</h1>
+  <p class="mt-1 text-sm text-slate-600">Gunakan akun PENS Anda.</p>
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+  <x-auth-session-status class="mt-4 mb-2" :status="session('status')" />
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required
-                autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+  <form method="POST" action="{{ route('login') }}" class="mt-4 space-y-5">
+    @csrf
 
-        <!-- Password -->
-        <div class="mt-4 relative">
-            <x-input-label for="password" :value="__('Password')" />
+    {{-- Email --}}
+    <div>
+      <x-input-label for="email" :value="__('Email')" />
+      <x-text-input id="email" name="email" type="email" :value="old('email')" required autofocus autocomplete="username"
+        class="block mt-1 w-full appearance-none rounded-xl
+               bg-white text-gray-900 placeholder:text-slate-400
+               ring-1 ring-purple-900/10 focus:outline-none
+               focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500
+               shadow-sm" />
+      <x-input-error :messages="$errors->get('email')" class="mt-2" />
+    </div>
 
-            <x-text-input id="password" class="block mt-1 w-full pr-10" type="password" name="password" required
-                autocomplete="current-password" />
+    {{-- Password --}}
+    <div class="relative">
+      <x-input-label for="password" :value="__('Password')" />
+      <x-text-input id="password" name="password" type="password" required autocomplete="current-password"
+        class="block mt-1 w-full appearance-none rounded-xl pr-10
+               bg-white text-gray-900 placeholder:text-slate-400
+               ring-1 ring-purple-900/10 focus:outline-none
+               focus:ring-2 focus:ring-fuchsia-500 focus:border-fuchsia-500
+               shadow-sm" />
+      <button type="button" class="absolute right-3 top-10 text-slate-500 hover:text-slate-700"
+              onclick="togglePassword()" aria-label="Show/Hide password">
+        <i id="eyeIcon" class="fas fa-eye"></i>
+      </button>
+      <x-input-error :messages="$errors->get('password')" class="mt-2" />
+    </div>
 
-            <!-- Ikon mata -->
-            <div class="absolute right-3 top-9 cursor-pointer" onclick="togglePassword()">
-                <i id="eyeIcon" class="fas fa-eye text-gray-400"></i>
-            </div>
+    {{-- Remember --}}
+    <label for="remember_me" class="inline-flex items-center gap-2">
+      <input id="remember_me" type="checkbox"
+             class="rounded border-slate-300 text-fuchsia-600 shadow-sm focus:ring-fuchsia-500"
+             name="remember">
+      <span class="text-sm text-slate-600">Remember me</span>
+    </label>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+    {{-- Aksi --}}
+    <div class="space-y-3">
+      <x-primary-button
+        class="w-full justify-center normal-case rounded-2xl px-6 py-3
+               bg-gradient-to-r from-fuchsia-600 to-purple-600
+               text-white ring-1 ring-white/20 shadow-lg hover:opacity-95">
+        {{ __('Log in') }}
+      </x-primary-button>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox"
-                    class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+      <a href="{{ url('/') }}" class="block text-center text-sm text-slate-600 hover:text-purple-900 underline underline-offset-4">
+        Kembali ke Beranda
+      </a>
+    </div>
+  </form>
 
-        <div class="flex items-center justify-end mt-4">
-            {{-- @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif --}}
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-
-    <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const eyeIcon = document.getElementById('eyeIcon');
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                eyeIcon.classList.remove('fa-eye');
-                eyeIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                eyeIcon.classList.remove('fa-eye-slash');
-                eyeIcon.classList.add('fa-eye');
-            }
-        }
-    </script>
-
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const eye   = document.getElementById('eyeIcon');
+      const show  = input.type === 'password';
+      input.type  = show ? 'text' : 'password';
+      eye.classList.toggle('fa-eye', !show);
+      eye.classList.toggle('fa-eye-slash', show);
+    }
+  </script>
 </x-guest-layout>
-
-
-{{-- <x-guest-layout>
-    <main class="main-content mt-0 ps">
-        <section>
-            <div class="page-header min-vh-100">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-xl-4 col-lg-5 col-md-7 d-flex flex-column mx-lg-0 mx-auto">
-                            <div class="card card-plain">
-                                <div class="card-header pb-0 text-start">
-                                    <h4 class="font-weight-bolder">Sign In</h4>
-                                    <p class="mb-0">Enter your email and password to sign in</p>
-                                </div>
-                                <div class="card-body">
-                                    <form role="form">
-                                        <div class="mb-3">
-                                            <input type="email" class="form-control form-control-lg"
-                                                placeholder="Email" aria-label="Email">
-                                        </div>
-                                        <div class="mb-3">
-                                            <input type="email" class="form-control form-control-lg"
-                                                placeholder="Password" aria-label="Password">
-                                        </div>
-                                        <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="rememberMe">
-                                            <label class="form-check-label" for="rememberMe">Remember me</label>
-                                        </div>
-                                        <div class="text-center">
-                                            <button type="button"
-                                                class="btn btn-lg btn-primary btn-lg w-100 mt-4 mb-0">Sign
-                                                in</button>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="card-footer text-center pt-0 px-lg-2 px-1">
-                                    <p class="mb-4 text-sm mx-auto">
-                                        Don't have an account?
-                                        <a href="javascript:;" class="text-primary text-gradient font-weight-bold">Sign
-                                            up</a>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            class="col-6 d-lg-flex d-none h-100 my-auto pe-0 position-absolute top-0 end-0 text-center justify-content-center flex-column">
-                            <div class="position-relative bg-gradient-primary h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center overflow-hidden"
-                                style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-ill.jpg');
-                  background-size: cover;">
-                                <span class="mask bg-gradient-primary opacity-6"></span>
-                                <h4 class="mt-5 text-white font-weight-bolder position-relative">"Attention is the new
-                                    currency"</h4>
-                                <p class="text-white position-relative">The more effortless the writing looks, the more
-                                    effort the writer actually put into the process.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
-            <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
-        </div>
-        <div class="ps__rail-y" style="top: 0px; right: 0px;">
-            <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
-        </div>
-    </main>
-</x-guest-layout> --}}

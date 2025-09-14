@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #111827 !important; /* text-gray-900 */
+    transition: background-color 100000s ease-in-out 0s; /* hilangkan yellowish bg */
+  }
+}
