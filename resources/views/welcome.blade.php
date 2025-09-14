@@ -81,7 +81,7 @@
 
                     <p class="mt-6 text-lg/8 text-slate-600 max-w-2xl">
                         SafeShield akan memberikan pelayanan dalam bentuk form pelaporan dan wawasan
-                        tetang Satgas PPKPT. Satgas PPKPT akan menindaklanjuti laporan sesuai
+                        tentang Satgas PPKPT. Satgas PPKPT akan menindaklanjuti laporan sesuai
                         Permendikbudristek No. 55/2024.
                     </p>
 
