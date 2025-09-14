@@ -1,6 +1,6 @@
 {{-- resources/views/welcome.blade.php --}}
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id" class="scroll-smooth dark">
 
 <head>
     <meta charset="utf-8" />

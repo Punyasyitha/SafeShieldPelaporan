@@ -23,4 +23,8 @@ export default {
         require('@tailwindcss/forms'),
         require('tailwind-scrollbar-hide'),
     ],
+
+    darkMode: 'class',
+    content: ['./resources/**/*.blade.php','./resources/**/*.js','./resources/**/*.vue'],
+    theme: { extend: {} }
 };
